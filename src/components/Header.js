@@ -14,7 +14,7 @@ export default function Header() {
 
         <Flex>
           <div>
-            <h1>Build The Community Your Fans Will Love</h1>
+            <h1>Build The Community Your Fans Will Love1</h1>
 
             <p>
               Huddle re-imagines the way we build communities. You have a voice,

@@ -5,6 +5,7 @@ import Card from './components/Card'
 import { Container } from './components/styles/Container.styled'
 import GlobalStyles from './components/styles/Global'
 import content from './content'
+import Todo from './components/Todo'
 
 const theme = {
   colors: {
@@ -21,6 +22,7 @@ function App() {
       <>
         <GlobalStyles />
         <Header />
+        <Todo/>
         <Container>
           {content.map((item, index) => (
             <Card key={index} item={item} />
