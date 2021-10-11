@@ -16,19 +16,29 @@ const theme = {
   mobile: '768px',
 }
 
+// function App() {
+//   return (
+//     <ThemeProvider theme={theme}>
+//       <>
+//         <GlobalStyles />
+//         <Header />
+//         <Todo/>
+//         <Container>
+//           {content.map((item, index) => (
+//             <Card key={index} item={item} />
+//           ))}
+//         </Container>
+//         <Footer />
+//       </>
+//     </ThemeProvider>
+//   )
+// }
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <>
-        <GlobalStyles />
-        <Header />
         <Todo/>
-        <Container>
-          {content.map((item, index) => (
-            <Card key={index} item={item} />
-          ))}
-        </Container>
-        <Footer />
       </>
     </ThemeProvider>
   )

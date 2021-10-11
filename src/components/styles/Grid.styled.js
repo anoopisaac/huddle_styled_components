@@ -4,10 +4,13 @@ export const Grid = styled.div`
   display: grid;
   align-items: center;
   ${({ gtr }) => {
-    return `${gtr?`grid-template-rows:200px;`:``}`
+    return `${gtr ? `grid-template-rows:${gtr};` : ``}`
   }}
-  ${({ gta }) => {
-    return `${gta?`grid-auto-rows:200px;`:``}`
+  ${({ gar }) => {
+    return `${gar ? `grid-auto-rows:${gar};` : ``}`
+  }}
+  ${({ gac }) => {
+    return `${gac ? `grid-auto-columns:${gac};grid-auto-flow:column;` : ``}`
   }}
 
   @media (max-width: ${({ theme }) => theme.mobile}) {

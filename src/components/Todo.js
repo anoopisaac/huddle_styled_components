@@ -23,10 +23,32 @@ export default function Todo({ url }) {
             )
     }, [url]);
 
+    const insertTask = async(event) => {
+        const response = await fetch('https://8ielcob36m.execute-api.us-east-1.amazonaws.com/beta', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "userProject": "anoopofficial",
+                "taskId": 123456,
+                "dueDate": "2021/10/11",
+                "tags": "ihcs",
+                "subTasks": ["do something"],
+                "task": "do what",
+                "priority": "high",
+                "duration": 10
+            })
+        });
+        const data = await response.json();
+        // enter you logic when the fetch is successful
+        console.log(data);
+    }
+
     return (
-        <Grid className="hello" gtr="200px 100px" gta="20px">
+        <Grid className="hello test" gac="350px">
             {todos.map((todo) =>
-                <div key={todo.task_id}>
+                <div key={todo.task_id} onClick={() => insertTask()}>
                     {todo.task}
                 </div>
             )}
