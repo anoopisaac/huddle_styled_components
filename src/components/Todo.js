@@ -24,14 +24,15 @@ export default function Todo({ url }) {
     }, [url]);
 
     const insertTask = async(event) => {
-        const response = await fetch('https://8ielcob36m.execute-api.us-east-1.amazonaws.com/beta', {
+        const taskId=Math.round(Math.random()*10000000000);
+        const response = await fetch('https://8ielcob36m.execute-api.us-east-1.amazonaws.com/beta/hello', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "userProject": "anoopofficial",
-                "taskId": 123456,
+                "userProject": "anoop#official",
+                "taskId": taskId,
                 "dueDate": "2021/10/11",
                 "tags": "ihcs",
                 "subTasks": ["do something"],
