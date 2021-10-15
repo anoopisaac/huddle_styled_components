@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
 import { Task } from './common';
-declare var window:any;
+declare var window: any;
 
 export class Todo extends React.Component {
     url = "https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo?partKey=anoop&project=official";
@@ -22,7 +22,7 @@ export class Todo extends React.Component {
         }
     }
     componentDidMount() {
-        window['ee']=this;
+        window['ee'] = this;
         fetch(this.url)
             .then(res => res.json())
             .then(
@@ -52,7 +52,7 @@ export class Todo extends React.Component {
         console.log(this.tasks);
     }
 
-    insertTask = async (event:any) => {
+    insertTask = async () => {
         const taskId = Math.round(Math.random() * 10000000000);
         const response = await fetch('https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo', {
             method: 'POST',
@@ -69,8 +69,8 @@ export class Todo extends React.Component {
                 "priority": "high",
                 "duration": 10
             })
-        });
-        const data = await response.json();
+        })
+        const data = await response.text();
         // enter you logic when the fetch is successful
         console.log(data);
     }
@@ -78,15 +78,17 @@ export class Todo extends React.Component {
     render() {
         return (
             <Grid className="hello test">
-                <Modal trigger={this.editTask} close={() => {this.editTask = undefined;this.setState({})}}>
+                <Modal trigger={this.editTask} close={() => { this.editTask = undefined; this.setState({}) }}>
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
                 {this.tasks.map((task) =>
-                    <div key={task.task_id} onClick={() => {this.editTask = task;this.setState({})}}>
+                    <div key={task.task_id} onClick={() => { this.editTask = task; this.setState({}) }}>
                         <div> {task.task}</div>
                         <div> {task.priority}</div>
                     </div>
                 )}
+
+                <div onClick={() => this.insertTask()}>Hello How</div>
             </Grid>
         )
     }
