@@ -78,7 +78,7 @@ export class Todo extends React.Component {
     render() {
         return (
             <Grid className="hello test">
-                <Modal trigger={this.editTask} close={() => this.editTask = undefined}>
+                <Modal trigger={this.editTask} close={() => {this.editTask = undefined;this.setState({})}}>
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
                 {this.tasks.map((task) =>
