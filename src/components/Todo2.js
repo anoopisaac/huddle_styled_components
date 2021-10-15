@@ -33,7 +33,6 @@ export default function Todo({ url }) {
         const newTodos = todos.map((item) => {
             return item.task_id === data.task_id?data:item
         });
-
         settodos(newTodos);
         console.log(newTodos);
     }
@@ -61,14 +60,19 @@ export default function Todo({ url }) {
         console.log(data);
     }
 
+    const showEdit=(todo)=>{
+        console.log(todo.task_id);
+        setTaskEdit(true);
+        setCurrTask(todo);
+    }
+
     return (
         <Grid className="hello test">
-            <Modal trigger={taskEdit}>
+            <Modal trigger={taskEdit} setTaskEdit={setTaskEdit}>
                 <TodoForm updateTask={updateTask} task={currTask} />
             </Modal>
             {todos.map((todo) =>
-                <div key={todo.task_id} onClick={() => { setTaskEdit(true); setCurrTask(todo) }}>
-                   
+                <div key={todo.task_id} onClick={() => showEdit(todo) }>
                     <div> {todo.task}</div>
                     <div> {todo.priority}</div>
                 </div>

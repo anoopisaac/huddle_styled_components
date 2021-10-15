@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 export default function TodoForm(props) {
@@ -8,6 +8,10 @@ export default function TodoForm(props) {
             priority: props.task.priority,
         }
     });
+
+    useEffect(() => {
+        console.log("new one",props.task.task_id)
+    }, [props.task]);
 
     const onSubmit = (data) => {
         // console.log(register);

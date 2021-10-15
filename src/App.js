@@ -5,8 +5,7 @@ import Card from './components/Card'
 import { Container } from './components/styles/Container.styled'
 import GlobalStyles from './components/styles/Global'
 import content from './content'
-import Todo from './components/Todo'
-
+import { Todo } from './components/Todo1'
 const theme = {
   colors: {
     header: '#ebfbff',
