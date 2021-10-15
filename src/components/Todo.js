@@ -1,11 +1,14 @@
 import { StyledCard } from './styles/Card.styled'
 import { Grid } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
-
-
+import Modal from './Modal';
+import TodoForm from './TodoForm';
 export default function Todo({ url }) {
-    url = "https://8ielcob36m.execute-api.us-east-1.amazonaws.com/beta";
+    url = "https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo?partKey=anoop&project=official";
     const [todos, settodos] = useState([]);
+    const [taskEdit, setTaskEdit] = useState(false);
+    const [currTask, setCurrTask] = useState(null);
+    let task;
     useEffect(() => {
         fetch(url)
             .then(res => res.json())
@@ -23,9 +26,21 @@ export default function Todo({ url }) {
             )
     }, [url]);
 
-    const insertTask = async(event) => {
-        const taskId=Math.round(Math.random()*10000000000);
-        const response = await fetch('https://8ielcob36m.execute-api.us-east-1.amazonaws.com/beta/hello', {
+    const updateTask = (data) => {
+        console.log(data);
+        // setCurrTask(data);
+        // todos.find(todo=>todo.task_id===data.task_id)
+        const newTodos = todos.map((item) => {
+            return item.task_id === data.task_id?data:item
+        });
+
+        settodos(newTodos);
+        console.log(newTodos);
+    }
+
+    const insertTask = async (event) => {
+        const taskId = Math.round(Math.random() * 10000000000);
+        const response = await fetch('https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -47,10 +62,15 @@ export default function Todo({ url }) {
     }
 
     return (
-        <Grid className="hello test" gac="350px">
+        <Grid className="hello test">
+            <Modal trigger={taskEdit}>
+                <TodoForm updateTask={updateTask} task={currTask} />
+            </Modal>
             {todos.map((todo) =>
-                <div key={todo.task_id} onClick={() => insertTask()}>
-                    {todo.task}
+                <div key={todo.task_id} onClick={() => { setTaskEdit(true); setCurrTask(todo) }}>
+                   
+                    <div> {todo.task}</div>
+                    <div> {todo.priority}</div>
                 </div>
             )}
         </Grid>
