@@ -1,9 +1,11 @@
-import { StyledCard } from './styles/Card.styled'
 import { Grid } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
 import { Task, TaskGroup } from './common';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCoffee, faEdit } from '@fortawesome/free-solid-svg-icons';
+
 declare var window: any;
 
 export class Todo extends React.Component {
@@ -130,7 +132,9 @@ export class Todo extends React.Component {
                                     taskItem.isUrgent = taskItem.isUrgent === true ? false : true;
                                     this.updateTask(taskItem);
                                 }}></Grid>
-                                <Grid onClick={() => { this.editTask = taskItem; this.setState({}) }}></Grid>
+                                <Grid onClick={() => { this.editTask = taskItem; this.setState({}) }}>
+                                    <FontAwesomeIcon icon={faEdit} />
+                                </Grid>
                             </Grid>
                         )}
                     </Grid>
