@@ -3,7 +3,7 @@ import { Grid } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
-import { Task } from './common';
+import { Task, TaskGroup } from './common';
 declare var window: any;
 
 export class Todo extends React.Component {
@@ -12,6 +12,8 @@ export class Todo extends React.Component {
     // const [taskEdit, setTaskEdit] = useState(false);
     // const [currTask, setCurrTask] = useState(null);
     tasks: Task[] = [];
+    taskGroups: TaskGroup[] = [];
+
     editTask: Task | undefined = undefined;
     constructor(props: any) {
         super(props);
@@ -28,6 +30,7 @@ export class Todo extends React.Component {
             .then(
                 (result) => {
                     this.tasks = result.Items;
+                    this.groupTasks(this.tasks);
                     // settodos(result.Items);
                     console.log(result);
                     this.setState({})
@@ -90,23 +93,49 @@ export class Todo extends React.Component {
     }
 
     groupTasks = (tasks: Task[]) => {
-
+        const prevTasks: Task[] = [];
+        const todayTasks: Task[] = [];
+        const tomorrowTasks: Task[] = [];
+        const restOfTheWeekTasks: Task[] = [];
+        const nextWeekTasks: Task[] = [];
+        const thereAfterTasks: Task[] = [];
+        tasks.forEach(item => {
+            const todayDateTime = new Date(new Date().toDateString()).getTime();
+            const taskDate = new Date(item.dueDate);
+            if (taskDate.getTime() < todayDateTime) {
+                prevTasks.push(item);
+            }
+        })
+        const prevTaskGroup = new TaskGroup("Previous", "Previous Task", prevTasks);
+        this.taskGroups.push(prevTaskGroup);
     }
 
     render() {
         return (
-            <Grid className="hello test">
+            <Grid className="task-group-container" gtc="200px 200px" >
                 <Modal trigger={this.editTask} close={() => { this.editTask = undefined; this.setState({}) }}>
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
-                {this.tasks.map((task) =>
-                    <div key={task.taskId} onClick={() => { this.editTask = task; this.setState({}) }} style={{ margin: '4px' }}>
-                        <div> {task.taskText}</div>
-                        <div> {task.priority}</div>
-                    </div>
+                {this.taskGroups.map((groupItem: TaskGroup) =>
+                    <Grid gar="20px" key={groupItem.groupId} className="task-group">
+                        <div>{groupItem.groupTitle}</div>
+                        {groupItem.tasks.map(taskItem =>
+                            <Grid gtc="190px 1fr 1fr 1fr" cg="5px" key={taskItem.taskId} mb="4px" className="task">
+                                <div> {taskItem.taskText}</div>
+                                <Grid circle={taskItem.priority === "high" ? "red" : "#ff000040"} as="center" onClick={() => {
+                                    taskItem.priority = taskItem.priority === "high" ? "low" : "high";
+                                    this.updateTask(taskItem);
+                                }}></Grid>
+                                <Grid circle={taskItem.isUrgent === true ? "purple" : "#80008036"} as="center" onClick={() => {
+                                    taskItem.isUrgent = taskItem.isUrgent === true ? false : true;
+                                    this.updateTask(taskItem);
+                                }}></Grid>
+                                <Grid onClick={() => { this.editTask = taskItem; this.setState({}) }}></Grid>
+                            </Grid>
+                        )}
+                    </Grid>
                 )}
-
-                <div onClick={() => this.insertTask()}>insert task</div>
+                {/* <div onClick={() => this.insertTask()}>insert task</div> */}
             </Grid>
         )
     }
