@@ -1,23 +1,27 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { Task } from "./common";
 
-export default function TodoForm(props) {
-    const { register, handleSubmit, errors } = useForm({
+export default function TodoForm(props: any) {
+    // const task:Task=<Task>props.task;
+    // const task: Task = props.task;
+    const { task: task, updateTask: updateTask } = props;
+    const { register, handleSubmit } = useForm({
         defaultValues: {
-            task: props.task.task,
+            taskText: props.task.taskText,
             priority: props.task.priority,
         }
     });
 
     useEffect(() => {
-        console.log("new one",props.task.task_id)
+        console.log("new one", task)
     }, [props.task]);
 
-    const onSubmit = (data) => {
+    const onSubmit = (newData: Task) => {
         // console.log(register);
-        props.task.task = data.task;
-        props.task.priority = data.priority;
-        props.updateTask(props.task);
+        task.taskText = newData.taskText;
+        task.priority = newData.priority;
+        updateTask(task);
 
     };
 
@@ -26,7 +30,7 @@ export default function TodoForm(props) {
             <form onSubmit={handleSubmit(onSubmit)} >
                 <div className="form-control">
                     <label>Task</label>
-                    <input type="text"  {...register("task")} />
+                    <input type="text"  {...register("taskText")} />
                 </div>
                 <div className="form-control">
                     <label>priority</label>
@@ -34,7 +38,7 @@ export default function TodoForm(props) {
                 </div>
                 <div className="form-control">
                     <label></label>
-                    <button type="submit">Login</button>
+                    <button type="submit">Submit</button>
                 </div>
             </form>
         </div>

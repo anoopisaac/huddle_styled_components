@@ -7,7 +7,7 @@ import { Task } from './common';
 declare var window: any;
 
 export class Todo extends React.Component {
-    url = "https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo?partKey=anoop&project=official";
+    url = "https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo?partKey=anoop&project=personal";
     // const [todos, settodos] = useState([]);
     // const [taskEdit, setTaskEdit] = useState(false);
     // const [currTask, setCurrTask] = useState(null);
@@ -42,37 +42,55 @@ export class Todo extends React.Component {
     }
     updateTask = (task: Task) => {
         console.log(task);
-        // setCurrTask(data);
-        // todos.find(todo=>todo.task_id===data.task_id)
-        this.tasks = this.tasks.map((item) => {
-            return item.task_id === task.task_id ? task : item
-        });
+        const existTask = this.tasks.find(item => item.taskId === task.taskId)
+        if (existTask === undefined) {
+            this.insertUpdateRemoteTask(true, task);
+            this.tasks.push(task);
+        } else {
+            // setCurrTask(data);
+            // todos.find(todo=>todo.task_id===data.task_id)
+            this.tasks = this.tasks.map((item) => {
+                return item.taskId === task.taskId ? task : item
+            });
+            this.insertUpdateRemoteTask(false, task);
+        }
+
         this.setState({})
         // settodos(newTodos);
         console.log(this.tasks);
     }
 
-    insertTask = async () => {
+    insertTask = () => {
+        const newTask = new Task();
+        const taskDate = new Date();
+        newTask.dueDate = `${taskDate.getFullYear()}/${taskDate.getMonth() + 1}/${taskDate.getDate()}`
+        newTask.taskText = "have fun";
+        newTask.priority = "high";
+        newTask.subTasks = [{ taskText: "", status: "notdone" }];
+        newTask.tags = "fun";
+        newTask.taskId = Math.round(Math.random() * 10000000000) + "";
+        newTask.userProject = "anoop#personal"
+        this.editTask = newTask;
+        this.setState({});
+
+    }
+
+    insertUpdateRemoteTask = async (isInsert: boolean, task: Task) => {
         const taskId = Math.round(Math.random() * 10000000000);
         const response = await fetch('https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo', {
-            method: 'POST',
+            method: isInsert ? 'POST' : 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                "userProject": "anoop#official",
-                "taskId": taskId,
-                "dueDate": "2021/10/11",
-                "tags": "ihcs",
-                "subTasks": ["do something"],
-                "task": "do what",
-                "priority": "high",
-                "duration": 10
-            })
+            body: JSON.stringify(task)
         })
         const data = await response.text();
         // enter you logic when the fetch is successful
         console.log(data);
+    }
+
+    groupTasks = (tasks: Task[]) => {
+
     }
 
     render() {
@@ -82,13 +100,13 @@ export class Todo extends React.Component {
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
                 {this.tasks.map((task) =>
-                    <div key={task.task_id} onClick={() => { this.editTask = task; this.setState({}) }}>
-                        <div> {task.task}</div>
+                    <div key={task.taskId} onClick={() => { this.editTask = task; this.setState({}) }} style={{ margin: '4px' }}>
+                        <div> {task.taskText}</div>
                         <div> {task.priority}</div>
                     </div>
                 )}
 
-                <div onClick={() => this.insertTask()}>Hello How</div>
+                <div onClick={() => this.insertTask()}>insert task</div>
             </Grid>
         )
     }
