@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const Grid: any = styled.div`
+export const Styler: any = styled.div`
   font-family: 'Roboto', sans-serif;
   ${(props: any) => {
     const cssList: string[] = [];
@@ -17,6 +17,13 @@ export const Grid: any = styled.div`
             width: 10px;
             height: 10px;
             background:${props[key]};
+            `
+        )
+      }
+      if (key === "task") {
+        cssList.push(
+          `border-radius: 5px;
+            border:solid 1px red;
             `
         )
       }
@@ -44,9 +51,15 @@ const styleDic: any = {
   gar: "grid-auto-rows",
   gaf: "grid-auto-flow",
   fs: "font-size",
-  as: "align-self",
+  als: "align-self",
+  jus: "justify-self",
   cg: "column-gap",
   rg: "row-gap",
+  br: "border-radius",
+  p: "padding",
+  bdr: "border",
+  bb: "border-bottom",
+  ai: "align-items"
 }
 
 

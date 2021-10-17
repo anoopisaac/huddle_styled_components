@@ -1,10 +1,11 @@
-import { Grid } from './styles/Grid.styled'
+import { Styler } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
 import { Task, TaskGroup } from './common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoffee, faEdit } from '@fortawesome/free-solid-svg-icons';
+import './styles/common.scss'
 
 declare var window: any;
 
@@ -114,33 +115,33 @@ export class Todo extends React.Component {
 
     render() {
         return (
-            <Grid className="task-group-container" gtc="200px 200px" >
+            <Styler className="task-group-container" gtc="300px 200px" >
                 <Modal trigger={this.editTask} close={() => { this.editTask = undefined; this.setState({}) }}>
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
                 {this.taskGroups.map((groupItem: TaskGroup) =>
-                    <Grid gar="20px" key={groupItem.groupId} className="task-group">
-                        <div>{groupItem.groupTitle}</div>
+                    <Styler gar="30px" key={groupItem.groupId} className="task-group" br="5px" bdr="1px solid #9e9e9e" p="10px">
+                        <Styler bb="1px solid #9e9e9e" d="grid"><Styler as="span" als="center">{groupItem.groupTitle}</Styler></Styler>
                         {groupItem.tasks.map(taskItem =>
-                            <Grid gtc="190px 1fr 1fr 1fr" cg="5px" key={taskItem.taskId} mb="4px" className="task">
+                            <Styler gtc="1fr 10px 10px 10px" cg="5px" key={taskItem.taskId} mb="4px" className="task" d="grid" ai="center">
                                 <div> {taskItem.taskText}</div>
-                                <Grid circle={taskItem.priority === "high" ? "red" : "#ff000040"} as="center" onClick={() => {
+                                <Styler circle={taskItem.priority === "high" ? "red" : "#ff000040"} als="center" onClick={() => {
                                     taskItem.priority = taskItem.priority === "high" ? "low" : "high";
                                     this.updateTask(taskItem);
-                                }}></Grid>
-                                <Grid circle={taskItem.isUrgent === true ? "purple" : "#80008036"} as="center" onClick={() => {
+                                }}></Styler>
+                                <Styler circle={taskItem.isUrgent === true ? "purple" : "#80008036"} als="center" onClick={() => {
                                     taskItem.isUrgent = taskItem.isUrgent === true ? false : true;
                                     this.updateTask(taskItem);
-                                }}></Grid>
-                                <Grid onClick={() => { this.editTask = taskItem; this.setState({}) }}>
-                                    <FontAwesomeIcon icon={faEdit} />
-                                </Grid>
-                            </Grid>
+                                }}></Styler>
+                                <Styler onClick={() => { this.editTask = taskItem; this.setState({}) }} als="center">
+                                    <FontAwesomeIcon icon={faEdit} className="awesome-icon" />
+                                </Styler>
+                            </Styler>
                         )}
-                    </Grid>
+                    </Styler>
                 )}
                 {/* <div onClick={() => this.insertTask()}>insert task</div> */}
-            </Grid>
+            </Styler>
         )
     }
 }
