@@ -1,5 +1,5 @@
 import { StyledCard } from './styles/Card.styled'
-import { Grid } from './styles/Grid.styled'
+import { Styler } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
@@ -67,7 +67,7 @@ export default function Todo({ url }) {
     }
 
     return (
-        <Grid className="hello test">
+        <Styler className="hello test">
             <Modal trigger={taskEdit} setTaskEdit={setTaskEdit}>
                 <TodoForm updateTask={updateTask} task={currTask} />
             </Modal>
@@ -77,6 +77,6 @@ export default function Todo({ url }) {
                     <div> {todo.priority}</div>
                 </div>
             )}
-        </Grid>
+        </Styler>
     )
 }
