@@ -6,6 +6,9 @@ import { Task, TaskGroup } from './common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoffee, faEdit } from '@fortawesome/free-solid-svg-icons';
 import './styles/common.scss'
+import { fetchTasks, getState } from '../StateService';
+import { messageService } from '../Message';
+import { Subscription } from 'rxjs';
 
 declare var window: any;
 
@@ -26,25 +29,36 @@ export class Todo extends React.Component {
             // currentTask: null
         }
     }
+
+    subscription: Subscription | undefined;
+
     componentDidMount() {
+        this.subscription = messageService.getMessage().subscribe(data => {
+            console.log(getState().tasks);
+            this.setState({});
+        })
         window['ee'] = this;
-        fetch(this.url)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.tasks = result.Items;
-                    this.groupTasks(this.tasks);
-                    // settodos(result.Items);
-                    console.log(result);
-                    this.setState({})
-                },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
-                (error) => {
-                    this.tasks = [];
-                }
-            )
+        // fetch(this.url)
+        //     .then(res => res.json())
+        //     .then(
+        //         (result) => {
+        //             this.tasks = result.Items;
+        //             this.groupTasks(this.tasks);
+        //             // settodos(result.Items);
+        //             console.log(result);
+        //             this.setState({})
+        //         },
+        //         // Note: it's important to handle errors here
+        //         // instead of a catch() block so that we don't swallow
+        //         // exceptions from actual bugs in components.
+        //         (error) => {
+        //             this.tasks = [];
+        //         }
+        //     )
+        fetchTasks();
+    }
+    componentWillUnmount() {
+        this.subscription?.unsubscribe();
     }
     updateTask = (task: Task) => {
         console.log(task);
@@ -76,9 +90,9 @@ export class Todo extends React.Component {
         newTask.tags = "fun";
         newTask.taskId = Math.round(Math.random() * 10000000000) + "";
         newTask.userProject = "anoop#personal"
+        newTask.isUrgent = false;
         this.editTask = newTask;
         this.setState({});
-
     }
 
     insertUpdateRemoteTask = async (isInsert: boolean, task: Task) => {
@@ -95,24 +109,11 @@ export class Todo extends React.Component {
         console.log(data);
     }
 
-    groupTasks = (tasks: Task[]) => {
-        const prevTasks: Task[] = [];
-        const todayTasks: Task[] = [];
-        const tomorrowTasks: Task[] = [];
-        const restOfTheWeekTasks: Task[] = [];
-        const nextWeekTasks: Task[] = [];
-        const thereAfterTasks: Task[] = [];
-        tasks.forEach(item => {
-            const todayDateTime = new Date(new Date().toDateString()).getTime();
-            const taskDate = new Date(item.dueDate);
-            if (taskDate.getTime() < todayDateTime) {
-                prevTasks.push(item);
-            }
-        })
-        const prevTaskGroup = new TaskGroup("Previous", "Previous Task", prevTasks);
-        this.taskGroups.push(prevTaskGroup);
-    }
 
+    test = () => {
+        // console.log(getState().hello);
+
+    }
     render() {
         return (
             <Styler className="task-group-container" gtc="300px 200px" >
@@ -120,11 +121,11 @@ export class Todo extends React.Component {
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
                 {this.taskGroups.map((groupItem: TaskGroup) =>
-                    <Styler gar="30px" key={groupItem.groupId} className="task-group" br="5px" bdr="1px solid #9e9e9e" p="10px">
+                    <Styler gar="30px" key={groupItem.groupId} className="task-group" br="5px" bdr="1px solid #9e9e9e" p="10px" onClick={() => this.test()}>
                         <Styler bb="1px solid #9e9e9e" d="grid"><Styler as="span" als="center">{groupItem.groupTitle}</Styler></Styler>
                         {groupItem.tasks.map(taskItem =>
                             <Styler gtc="1fr 10px 10px 10px" cg="5px" key={taskItem.taskId} mb="4px" className="task" d="grid" ai="center">
-                                <div> {taskItem.taskText}</div>
+                                <Styler ellipsis="" mw="180px"> {taskItem.taskText}</Styler>
                                 <Styler circle={taskItem.priority === "high" ? "red" : "#ff000040"} als="center" onClick={() => {
                                     taskItem.priority = taskItem.priority === "high" ? "low" : "high";
                                     this.updateTask(taskItem);

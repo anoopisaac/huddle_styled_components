@@ -20,13 +20,15 @@ export const Styler: any = styled.div`
             `
         )
       }
-      if (key === "task") {
+      if (key === "ellipsis") {
         cssList.push(
-          `border-radius: 5px;
-            border:solid 1px red;
-            `
+          `white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        `
         )
       }
+
       if (props[key] !== undefined && styleDic[key] !== undefined) {
         cssList.push(`${styleDic[key]}:${props[key]};`)
       }
@@ -59,7 +61,13 @@ const styleDic: any = {
   p: "padding",
   bdr: "border",
   bb: "border-bottom",
-  ai: "align-items"
+  ai: "align-items",
+  mw: "max-width",
+  mh: "max-height",
+  ht: "height",
+  wd: "width",
+  bgc: "background-color",
+  cr: "cursor"
 }
 
 

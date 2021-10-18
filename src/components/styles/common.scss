@@ -1,3 +1,14 @@
+
+body{
+    min-height: 100vh;
+    margin: 0px;
+    #root{
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 200px 1fr;
+    }
+}
+
 .awesome-icon{
     width: 15px !important;
     height: 15px !important;

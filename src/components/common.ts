@@ -18,3 +18,9 @@ export class TaskGroup {
     constructor(public groupId: string, public groupTitle: string, public tasks: Task[]) {
     }
 }
+
+
+export class State {
+    tasks: Task[] = [];
+    selectedTaskGroup!: TaskGroup;
+}

@@ -6,6 +6,7 @@ import { Container } from './components/styles/Container.styled'
 import GlobalStyles from './components/styles/Global'
 import content from './content'
 import { Todo } from './components/Todo1'
+import { SideBar } from './components/SideBar'
 const theme = {
   colors: {
     header: '#ebfbff',
@@ -37,6 +38,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <>
+        <SideBar></SideBar>
         <Todo/>
       </>
     </ThemeProvider>
