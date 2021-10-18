@@ -2,7 +2,7 @@ import { Styler } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
-import { Task, TaskGroup } from './common';
+import { AppState, Task, TaskGroup } from './common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoffee, faEdit } from '@fortawesome/free-solid-svg-icons';
 import './styles/common.scss'
@@ -17,9 +17,14 @@ export class Todo extends React.Component {
     // const [todos, settodos] = useState([]);
     // const [taskEdit, setTaskEdit] = useState(false);
     // const [currTask, setCurrTask] = useState(null);
-    tasks: Task[] = [];
-    taskGroups: TaskGroup[] = [];
-
+    // tasks: Task[] = [];
+    // taskGroups: TaskGroup[] = [];
+    // const [todos, settodos] = useState([]);
+    // const [taskEdit, setTaskEdit] = useState(false);
+    // const [currTask, setCurrTask] = useState(null);
+    // tasks: Task[] = [];
+    // taskGroups: TaskGroup[] = [];
+    appState!: AppState;
     editTask: Task | undefined = undefined;
     constructor(props: any) {
         super(props);
@@ -33,51 +38,36 @@ export class Todo extends React.Component {
     subscription: Subscription | undefined;
 
     componentDidMount() {
+        this.appState = getState();
         this.subscription = messageService.getMessage().subscribe(data => {
-            console.log(getState().tasks);
+            console.log(this.appState?.selectedTaskGroup.tasks, "eeeee");
             this.setState({});
         })
         window['ee'] = this;
-        // fetch(this.url)
-        //     .then(res => res.json())
-        //     .then(
-        //         (result) => {
-        //             this.tasks = result.Items;
-        //             this.groupTasks(this.tasks);
-        //             // settodos(result.Items);
-        //             console.log(result);
-        //             this.setState({})
-        //         },
-        //         // Note: it's important to handle errors here
-        //         // instead of a catch() block so that we don't swallow
-        //         // exceptions from actual bugs in components.
-        //         (error) => {
-        //             this.tasks = [];
-        //         }
-        //     )
         fetchTasks();
     }
     componentWillUnmount() {
         this.subscription?.unsubscribe();
     }
     updateTask = (task: Task) => {
+
         console.log(task);
-        const existTask = this.tasks.find(item => item.taskId === task.taskId)
+        const existTask = this.appState.tasks.find(item => item.taskId === task.taskId)
+        const selectedTaskGroup = this.appState.selectedTaskGroup;
         if (existTask === undefined) {
             this.insertUpdateRemoteTask(true, task);
-            this.tasks.push(task);
+            this.appState?.selectedTaskGroup?.tasks.push(task);
         } else {
             // setCurrTask(data);
             // todos.find(todo=>todo.task_id===data.task_id)
-            this.tasks = this.tasks.map((item) => {
+            selectedTaskGroup.tasks = selectedTaskGroup.tasks.map((item) => {
                 return item.taskId === task.taskId ? task : item
             });
             this.insertUpdateRemoteTask(false, task);
         }
-
         this.setState({})
         // settodos(newTodos);
-        console.log(this.tasks);
+        // console.log(this.tasks);
     }
 
     insertTask = () => {
@@ -115,15 +105,16 @@ export class Todo extends React.Component {
 
     }
     render() {
+        const selectedTaskGroup = this.appState?.selectedTaskGroup;
         return (
             <Styler className="task-group-container" gtc="300px 200px" >
                 <Modal trigger={this.editTask} close={() => { this.editTask = undefined; this.setState({}) }}>
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
-                {this.taskGroups.map((groupItem: TaskGroup) =>
-                    <Styler gar="30px" key={groupItem.groupId} className="task-group" br="5px" bdr="1px solid #9e9e9e" p="10px" onClick={() => this.test()}>
-                        <Styler bb="1px solid #9e9e9e" d="grid"><Styler as="span" als="center">{groupItem.groupTitle}</Styler></Styler>
-                        {groupItem.tasks.map(taskItem =>
+                {
+                    (selectedTaskGroup && <Styler gar="30px" key={selectedTaskGroup.groupId} className="task-group" br="5px" bdr="1px solid #9e9e9e" p="10px" onClick={() => this.test()}>
+                        <Styler bb="1px solid #9e9e9e" d="grid"><Styler as="span" als="center">{selectedTaskGroup.groupTitle}</Styler></Styler>
+                        {selectedTaskGroup.tasks.map(taskItem =>
                             <Styler gtc="1fr 10px 10px 10px" cg="5px" key={taskItem.taskId} mb="4px" className="task" d="grid" ai="center">
                                 <Styler ellipsis="" mw="180px"> {taskItem.taskText}</Styler>
                                 <Styler circle={taskItem.priority === "high" ? "red" : "#ff000040"} als="center" onClick={() => {
@@ -140,7 +131,8 @@ export class Todo extends React.Component {
                             </Styler>
                         )}
                     </Styler>
-                )}
+                    )
+                }
                 {/* <div onClick={() => this.insertTask()}>insert task</div> */}
             </Styler>
         )

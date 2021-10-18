@@ -13,7 +13,7 @@ export class SideBar extends React.Component {
         return (
             <Styler bgc="#f3f5fe" gtr="30px 30px 30px 30px 1fr" p="10px">
                 {['Today', 'Tomorrow', 'Next 7 days', 'Any day'].map(taskGrpItem =>
-                    <Styler gtc="30px 1fr" ai="center">
+                    <Styler gtc="30px 1fr" ai="center" key={taskGrpItem}>
                         <span><FontAwesomeIcon icon={faCalendar} className="awesome-icon" /></span>
                         <Styler as="span" cr="pointer">{taskGrpItem}</Styler>
                     </Styler>

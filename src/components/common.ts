@@ -20,7 +20,7 @@ export class TaskGroup {
 }
 
 
-export class State {
+export class AppState {
     tasks: Task[] = [];
     selectedTaskGroup!: TaskGroup;
 }
