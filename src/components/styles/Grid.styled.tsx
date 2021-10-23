@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 
-const cssDic: { [id: string]: string; } = {};
+let cssDic: { [id: string]: string; } = {};
 
 export const Styler: any = styled.div`
   font-family: 'Roboto', sans-serif;
-
+  ${()=>{cssDic={}; return ""}}
   @media (min-width: 0px) {
     ${(props: any) => {
       if(props.xs!==undefined){

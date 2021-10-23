@@ -13,11 +13,11 @@ export class SideBar extends React.Component {
 
     render() {
         return (
-            <Styler bgc="#f3f5fe" gtr="30px 30px 30px 30px 30px 1fr" p="10px">
+            <Styler xs={{ bgc: "#f3f5fe", gtr: "30px 30px 30px 30px 30px 1fr", p: "10px" }} >
                 {AppState.taskGroupNames.map(taskGrpItem =>
-                    <Styler gtc="30px 1fr" ai="center" key={taskGrpItem}>
+                    <Styler xs={{ gtc: "30px 1fr", ai: "center", p: "10px" }} key={taskGrpItem}>
                         <span><FontAwesomeIcon icon={faCalendar} className="awesome-icon" /></span>
-                        <Styler as="span" cr="pointer">{taskGrpItem}</Styler>
+                        <Styler xs={{ cr: "pointer" }} as="span" cr="pointer">{taskGrpItem}</Styler>
                     </Styler>
                 )
                 }
