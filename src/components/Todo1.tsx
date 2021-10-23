@@ -123,21 +123,21 @@ export class Todo extends React.Component {
     render() {
         const selectedTaskGroup = this.appState?.selectedTaskGroup;
         return (
-            <Styler className="task-group-container" gtc="700px 1fr" >
+            <Styler className="task-group-container" xs={{ gtc: "700px 1fr" }}>
                 <Modal trigger={this.editTask} close={() => { this.editTask = undefined; this.setState({}) }} width="600px" height="300px">
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
                 {
                     (selectedTaskGroup &&
-                        <Styler gar="30px 40px 1fr" key={selectedTaskGroup.groupId} className="task-group" br="5px" p="10px" onClick={() => this.test()}>
+                        <Styler xs={{ gar: "30px 40px 1fr", br: "5px", p: "10px" }} key={selectedTaskGroup.groupId} className="task-group" onClick={() => this.test()}>
                             <Styler as="span" als="center">{selectedTaskGroup.groupTitle}</Styler>
-                            <Styler als="center"><input type="text" name="" id="" className="form-control" placeholder="Add Task" /></Styler>
-                            <Styler gtr="30px">
+                            <Styler xs={{ als: "center" }} ><input type="text" name="" id="" className="form-control" placeholder="Add Task" /></Styler>
+                            <Styler xs={{ gtr: "30px" }} >
                                 {selectedTaskGroup.tasks.map(taskItem =>
-                                    <Styler gtc="1fr 30px 10px" cg="5px" key={taskItem.taskId} mb="4px" className="task" d="grid" ai="center">
-                                        <Styler ellipsis="" mw="180px"> {taskItem.taskText}</Styler>
+                                    <Styler xs={{ gtc: "1fr 30px 10px", cg: "5px", mb: "4px", d: "grid", ai: "center" }} key={taskItem.taskId} className="task">
+                                        <Styler ellipsis="" xs={{ mw: "180px" }}> {taskItem.taskText}</Styler>
                                         <TaskPriority task={this.appState.tasks[0]} updateTask={this.updateTask}></TaskPriority>
-                                        <Styler onClick={() => { this.editTask = taskItem; this.setState({}) }} als="center">
+                                        <Styler onClick={() => { this.editTask = taskItem; this.setState({}) }} xs={{ als: "center" }}>
                                             <FontAwesomeIcon icon={faEdit} className="awesome-icon" />
                                         </Styler>
                                     </Styler>

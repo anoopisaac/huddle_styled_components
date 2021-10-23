@@ -30,9 +30,9 @@ export default function TodoForm(props: any) {
     };
 
     return (
-        <Styler gar="30px">
-            <Styler as="form" onSubmit={handleSubmit(onSubmit)} gar="max-content" rg="10px" >
-                <Styler mt="10px">
+        <Styler xs={{ gar: "30px" }}>
+            <Styler as="form" onSubmit={handleSubmit(onSubmit)} xs={{ gar: "max-content", rg: "10px" }} >
+                <Styler xs={{ mt: "10px" }}>
                     {/* <input className="form-control" type="text"  /> */}
                     <TextField id="standard-basic" label="Task" variant="outlined" {...register("taskText")} sx={{ width: '100%' }} size="small" />
                 </Styler>

@@ -1,18 +1,24 @@
 import styled from 'styled-components'
 
+const cssDic: { [id: string]: string; } = {};
+
 export const Styler: any = styled.div`
   font-family: 'Roboto', sans-serif;
 
   @media (min-width: 0px) {
     ${(props: any) => {
-      const cssDic: { [id: string]: string; } = {};
-      applyStyles(props, cssDic);
-      // const finalCssList: string[] = [];
-      const finalCssList: string[] = Object.keys(cssDic).map(key => {
-        return `${key}:${cssDic[key]};`
-      })
-      return finalCssList.join("");
-      // return `${styleDic[mb] ? `margin:${gac};grid-auto-flow:column;` : ``}`
+      if(props.xs!==undefined){
+        applyStyles(props.xs, cssDic);
+        console.log(props);
+  
+        // const finalCssList: string[] = [];
+        const finalCssList: string[] = Object.keys(cssDic).map(key => {
+          return `${key}:${cssDic[key]};`
+        })
+        return finalCssList.join("");
+      }
+      return "";
+      
     }}
   }
 
