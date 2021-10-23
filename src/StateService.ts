@@ -1,4 +1,4 @@
-import { AppState, Task, TaskGroup } from "./components/common";
+import { AppState, Task, TaskGroup, TaskGroupNames } from "./common";
 import { messageService } from "./Message";
 
 const state: AppState = new AppState();
@@ -7,29 +7,36 @@ export const getState = () => state;
 export function setGroupedTask(groupName: string) {
     const tasks = state.tasks;
 
-    if (groupName === "Today") {
-        let todayTasks: Task[] = []
-        const todayDateTime = new Date(new Date().toDateString()).getTime();
-        tasks.forEach(item => {
-            const taskDate = new Date(item.dueDate);
-            if (taskDate.getTime() === todayDateTime) {
-                todayTasks.push(item);
-            }
-        })
-        const group = new TaskGroup("today", "Today", todayTasks);
-        state.selectedTaskGroup = group;
+    let filteredTasks: Task[] = []
+    const todayDateTime = new Date(new Date().toDateString()).getTime();
 
+
+    if (groupName === TaskGroupNames.TODAY) {
+        filteredTasks = tasks.filter(item => {
+            const taskDate = new Date(item.dueDate);
+            return taskDate.getTime() === todayDateTime
+        })
+        // tasks.forEach(item => {
+        //     const taskDate = new Date(item.dueDate);
+        //     if (taskDate.getTime() === todayDateTime) {
+        //         filteredTasks.push(item);
+        //     }
+        // })
+    } else if (groupName === TaskGroupNames.ANY_DAY) {
+        filteredTasks = tasks;
     }
+    const group = new TaskGroup("today", "Today", filteredTasks);
+    state.selectedTaskGroup = group;
 }
 const url = "https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo?partKey=anoop&project=personal";
 
-export function fetchTasks() {
+export function fetchTasks(groupName: string) {
     fetch(url)
         .then(res => res.json())
         .then(
             (result) => {
                 state.tasks = result.Items;
-                setGroupedTask("Today");
+                setGroupedTask(groupName);
                 messageService.sendMessage("done");
             },
             // Note: it's important to handle errors here

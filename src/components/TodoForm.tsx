@@ -1,11 +1,15 @@
+// import { Paper } from "@mui/material";
+import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import TextField from "@mui/material/TextField";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Task } from "./common";
+import { Task } from "../common";
+import { Styler } from "./styles/Grid.styled";
 
 export default function TodoForm(props: any) {
     // const task:Task=<Task>props.task;
     // const task: Task = props.task;
-    const { task: task, updateTask: updateTask } = props;
+    const { task, updateTask } = props;
     const { register, handleSubmit } = useForm({
         defaultValues: {
             taskText: props.task.taskText,
@@ -26,21 +30,29 @@ export default function TodoForm(props: any) {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit(onSubmit)} >
-                <div className="form-control">
-                    <label>Task</label>
-                    <input type="text"  {...register("taskText")} />
+        <Styler gar="30px">
+            <Styler as="form" onSubmit={handleSubmit(onSubmit)} gar="max-content" rg="10px" >
+                <Styler mt="10px">
+                    {/* <input className="form-control" type="text"  /> */}
+                    <TextField id="standard-basic" label="Task" variant="outlined" {...register("taskText")} sx={{ width: '100%' }} size="small" />
+                </Styler>
+                <div>
+                    <ToggleButtonGroup
+                        color="primary"
+                        value={'android'}
+                        exclusive
+                        onChange={() => { }}
+                        size="small"
+                    >
+                        <ToggleButton value="web">High</ToggleButton>
+                        <ToggleButton value="android">Medium</ToggleButton>
+                        <ToggleButton value="ios">Low</ToggleButton>
+                    </ToggleButtonGroup>
                 </div>
-                <div className="form-control">
-                    <label>priority</label>
-                    <input type="text"   {...register("priority")} />
+                <div>
+                    <Button variant="contained">Outlined</Button>
                 </div>
-                <div className="form-control">
-                    <label></label>
-                    <button type="submit">Submit</button>
-                </div>
-            </form>
-        </div>
+            </Styler>
+        </Styler>
     );
 }

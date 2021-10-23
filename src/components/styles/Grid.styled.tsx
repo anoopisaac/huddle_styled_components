@@ -2,51 +2,72 @@ import styled from 'styled-components'
 
 export const Styler: any = styled.div`
   font-family: 'Roboto', sans-serif;
-  ${(props: any) => {
-    const cssList: string[] = [];
-    Object.keys(props).forEach(key => {
-      if (["gtr", "gtc", "gar", "gac"].indexOf(key) > -1) {
-        cssList.push(`display:grid;`)
-      }
-      if (key === "gac") {
-        cssList.push(`grid-auto-flow:column;`)
-      }
-      if (key === "circle") {
-        cssList.push(
-          `border-radius: 50%;
-            width: 10px;
-            height: 10px;
-            background:${props[key]};
-            `
-        )
-      }
-      if (key === "ellipsis") {
-        cssList.push(
-          `white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        `
-        )
-      }
 
-      if (props[key] !== undefined && styleDic[key] !== undefined) {
-        cssList.push(`${styleDic[key]}:${props[key]};`)
-      }
-    })
-    return cssList.join("");
-    // return `${styleDic[mb] ? `margin:${gac};grid-auto-flow:column;` : ``}`
-  }}
-
-  @media (max-width: ${({ theme }) => theme.mobile}) {
-    flex-direction: column;
-    text-align: center;
+  @media (min-width: 0px) {
+    ${(props: any) => {
+      const cssDic: { [id: string]: string; } = {};
+      applyStyles(props, cssDic);
+      // const finalCssList: string[] = [];
+      const finalCssList: string[] = Object.keys(cssDic).map(key => {
+        return `${key}:${cssDic[key]};`
+      })
+      return finalCssList.join("");
+      // return `${styleDic[mb] ? `margin:${gac};grid-auto-flow:column;` : ``}`
+    }}
   }
+
+  // Small devices (landscape phones, 576px and up) sm
+  @media (min-width: 576px) {
+
+  }
+
+  // Medium devices (tablets, 768px and up) md
+  @media (min-width: 768px) {
+
+  }
+
+  // Large devices (desktops, 992px and up) lg
+  @media (min-width: 992px) {
+
+  }
+
+  // Extra large devices (large desktops, 1200px and up) xl
+  @media (min-width: 1200px) {
+
+  }
+
 `
+const applyStyles = (cssProps: { [id: string]: string; }, cssDic: { [id: string]: string; }) => {
+  Object.keys(cssProps).forEach(key => {
+    if (["gtr", "gtc", "gar", "gac"].indexOf(key) > -1) {
+      cssDic.display = "grid";
+    }
+    if (key === "gac") {
+      cssDic["grid-auto-flow"] = "column";
+      // cssList.push(`grid-auto-flow:column;`)
+    }
+    if (key === "circle") {
+      cssDic["border-radius"] = "50%";
+      cssDic["width"] = "10px";
+      cssDic["height"] = "10px";
+      cssDic["background"] = cssProps[key];
+    }
+    if (key === "ellipsis") {
+      cssDic["white-space"] = "nowrap";
+      cssDic["overflow"] = "hidden";
+      cssDic["text-overflow"] = "ellipsis";
+    }
+    if (cssProps[key] !== undefined && styleDic[key] !== undefined) {
+      cssDic[styleDic[key]] = cssProps[key];
+    }
+  })
+}
 
 
 const styleDic: any = {
   d: "display",
   mb: "margin-bottom",
+  mt: "margin-top",
   gtr: "grid-template-rows",
   gtc: "grid-template-columns",
   gac: "grid-auto-columns",
@@ -67,7 +88,10 @@ const styleDic: any = {
   ht: "height",
   wd: "width",
   bgc: "background-color",
-  cr: "cursor"
+  cr: "cursor",
+  bs: "box-sizing",
+  ps: "position",
+  top: "top",
 }
 
 

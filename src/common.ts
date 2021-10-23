@@ -7,6 +7,7 @@ export class Task {
     priority!: string;
     isUrgent!: boolean;
     subTasks!: SubTask[];
+    duration!: number;
 }
 
 export class SubTask {
@@ -19,8 +20,16 @@ export class TaskGroup {
     }
 }
 
+export enum TaskGroupNames {
+    PREV_DAY = "Previous Day",
+    TODAY = "Today",
+    TOMORROW = "Tomorrw",
+    Next_7_DAYS = "Next 7 days",
+    ANY_DAY = "Any day",
+}
 
 export class AppState {
+    static taskGroupNames = [TaskGroupNames.PREV_DAY, TaskGroupNames.TODAY, TaskGroupNames.TOMORROW, TaskGroupNames.Next_7_DAYS, TaskGroupNames.ANY_DAY];
     tasks: Task[] = [];
     selectedTaskGroup!: TaskGroup;
 }
