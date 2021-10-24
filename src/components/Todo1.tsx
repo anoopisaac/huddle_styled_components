@@ -9,6 +9,7 @@ import './styles/common.scss'
 import { fetchTasks, getState } from '../StateService';
 import { messageService } from '../Message';
 import { Subscription } from 'rxjs';
+import { EditableClient } from './EditableClient';
 
 declare var window: any;
 
@@ -116,22 +117,24 @@ export class Todo extends React.Component {
     }
 
 
-    test = () => {
+    closeModal = () => {
         // console.log(getState().hello);
-
+        this.editTask = undefined;
+        this.setState({})
     }
     render() {
         const selectedTaskGroup = this.appState?.selectedTaskGroup;
         return (
             <Styler className="task-group-container" xs={{ gtc: "700px 1fr" }}>
-                <Modal trigger={this.editTask} close={() => { this.editTask = undefined; this.setState({}) }} width="600px" height="300px">
+                <Modal trigger={this.editTask} close={() => this.closeModal()} width="600px" height="300px">
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
                 {
                     (selectedTaskGroup &&
-                        <Styler xs={{ gar: "30px 40px 1fr", br: "5px", p: "10px" }} key={selectedTaskGroup.groupId} className="task-group" onClick={() => this.test()}>
+                        <Styler xs={{ gar: "30px 40px 1fr", br: "5px", p: "10px" }} key={selectedTaskGroup.groupId} className="task-group">
                             <Styler as="span" als="center">{selectedTaskGroup.groupTitle}</Styler>
-                            <Styler xs={{ als: "center" }} ><input type="text" name="" id="" className="form-control" placeholder="Add Task" /></Styler>
+                            {/* <Styler xs={{ als: "center" }} ><input type="text" name="" id="" className="form-control" placeholder="Add Task" /></Styler> */}
+                            <Styler xs={{ als: "center" }} ><EditableClient></EditableClient></Styler>
                             <Styler xs={{ gtr: "30px" }} >
                                 {selectedTaskGroup.tasks.map(taskItem =>
                                     <Styler xs={{ gtc: "1fr 30px 10px", cg: "5px", mb: "4px", d: "grid", ai: "center" }} key={taskItem.taskId} className="task">
@@ -157,15 +160,15 @@ export class Todo extends React.Component {
 
 const TaskPriority: any = (props: any) => {
     return (
-        <Styler gtc="10px 10px" cg="5px">
-            <Styler circle={props.task.priority === "high" ? "red" : "#ff000040"} als="center" onClick={() => {
+        <Styler xs={{ gtc: "10px 10px", cg: "5px" }} >
+            <Styler xs={{ als: "center", circle: props.task.priority === "high" ? "red" : "#ff000040" }} onClick={() => {
                 props.task.priority = props.task.priority === "high" ? "low" : "high";
                 props.updateTask(props.task);
             }}></Styler>
-            <Styler circle={props.task.isUrgent === true ? "purple" : "#80008036"} als="center" onClick={() => {
+            {/* <Styler circle={props.task.isUrgent === true ? "purple" : "#80008036"} als="center" onClick={() => {
                 props.task.isUrgent = props.task.isUrgent === true ? false : true;
                 props.updateTask(props.task);
-            }}></Styler>
+            }}></Styler> */}
         </Styler>
 
     );

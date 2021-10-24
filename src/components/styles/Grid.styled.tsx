@@ -4,13 +4,13 @@ let cssDic: { [id: string]: string; } = {};
 
 export const Styler: any = styled.div`
   font-family: 'Roboto', sans-serif;
+  // making sure css dictionary from earlier element is not carry forwarded
   ${()=>{cssDic={}; return ""}}
   @media (min-width: 0px) {
     ${(props: any) => {
+      // only the xs here
       if(props.xs!==undefined){
-        applyStyles(props.xs, cssDic);
-        console.log(props);
-  
+        applyStyles(props.xs, cssDic);  
         // const finalCssList: string[] = [];
         const finalCssList: string[] = Object.keys(cssDic).map(key => {
           return `${key}:${cssDic[key]};`
