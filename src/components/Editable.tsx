@@ -26,19 +26,20 @@ class Editable extends React.Component {
 
     }
     handleClick = (e: any) => {
-        console.log(this.editRef.current, e.target, this.editRef.current.contains(e.target));
         if (this.editRef.current.contains(e.target)) {
             if (this.isEditing === false) {
                 this.isEditing = true;
             }
         } else {
-            this.isEditing = false;
+            if (this.isEditing === true) {
+                this.isEditing = false;
+                this.props.update();
+            }
         }
         this.setState({});
     }
     componentWillUnmount() {
         return () => document.removeEventListener("click", this.handleClick);
-
     }
 
     render() {

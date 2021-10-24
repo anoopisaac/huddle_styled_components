@@ -9,7 +9,7 @@ import './styles/common.scss'
 import { fetchTasks, getState } from '../StateService';
 import { messageService } from '../Message';
 import { Subscription } from 'rxjs';
-import { EditableClient } from './EditableClient';
+import Editable from './Editable';
 
 declare var window: any;
 
@@ -87,6 +87,13 @@ export class Todo extends React.Component {
         this.setState({});
     }
 
+
+    insertOnEnter = (taskText: string) => {
+        const newTask = this.getTask();
+        newTask.taskText = taskText;
+        this.updateTask(newTask);
+    }
+
     getTask = () => {
         const newTask = new Task();
         const taskDate = new Date();
@@ -133,12 +140,23 @@ export class Todo extends React.Component {
                     (selectedTaskGroup &&
                         <Styler xs={{ gar: "30px 40px 1fr", br: "5px", p: "10px" }} key={selectedTaskGroup.groupId} className="task-group">
                             <Styler as="span" als="center">{selectedTaskGroup.groupTitle}</Styler>
-                            {/* <Styler xs={{ als: "center" }} ><input type="text" name="" id="" className="form-control" placeholder="Add Task" /></Styler> */}
-                            <Styler xs={{ als: "center" }} ><EditableClient></EditableClient></Styler>
-                            <Styler xs={{ gtr: "30px" }} >
+                            <Styler xs={{ als: "center" }} >
+                                <input type="text" name="" id="" className="form-control" placeholder="Add Task"
+                                    onKeyDown={(e: any) => {
+                                        if (e.code === "Enter") {
+                                            this.insertOnEnter(e.target.value);
+                                        }
+                                    }}
+                                />
+                            </Styler>
+                            <Styler xs={{ gar: "30px" }} >
                                 {selectedTaskGroup.tasks.map(taskItem =>
                                     <Styler xs={{ gtc: "1fr 30px 10px", cg: "5px", mb: "4px", d: "grid", ai: "center" }} key={taskItem.taskId} className="task">
-                                        <Styler ellipsis="" xs={{ mw: "180px" }}> {taskItem.taskText}</Styler>
+                                        <Styler ellipsis="" xs={{ mw: "180px" }}>
+                                            <Editable text={taskItem.taskText} placeholder="Write a task name" type="input" width="200px" style={{ display: "grid" }} update={() => this.updateTask(taskItem)}>
+                                                <input type="text" name="task" placeholder="Write a task name" value={taskItem.taskText} onChange={e => { taskItem.taskText = e.target.value; this.setState({}) }} style={{ width: "100%", boxSizing: "border-box" }} />
+                                            </Editable>
+                                        </Styler>
                                         <TaskPriority task={this.appState.tasks[0]} updateTask={this.updateTask}></TaskPriority>
                                         <Styler onClick={() => { this.editTask = taskItem; this.setState({}) }} xs={{ als: "center" }}>
                                             <FontAwesomeIcon icon={faEdit} className="awesome-icon" />
