@@ -10,6 +10,7 @@ import { fetchTasks, getState } from '../StateService';
 import { messageService } from '../Message';
 import { Subscription } from 'rxjs';
 import Editable from './Editable';
+import { Divider } from '@mui/material';
 
 declare var window: any;
 
@@ -145,23 +146,28 @@ export class Todo extends React.Component {
                                     onKeyDown={(e: any) => {
                                         if (e.code === "Enter") {
                                             this.insertOnEnter(e.target.value);
+                                            e.target.value = ""
                                         }
                                     }}
                                 />
                             </Styler>
-                            <Styler xs={{ gar: "30px" }} >
+                            <Styler xs={{ gar: "max-content" }} >
                                 {selectedTaskGroup.tasks.map(taskItem =>
-                                    <Styler xs={{ gtc: "1fr 30px 10px", cg: "5px", mb: "4px", d: "grid", ai: "center" }} key={taskItem.taskId} className="task">
-                                        <Styler ellipsis="" xs={{ mw: "180px" }}>
-                                            <Editable text={taskItem.taskText} placeholder="Write a task name" type="input" width="200px" style={{ display: "grid" }} update={() => this.updateTask(taskItem)}>
-                                                <input type="text" name="task" placeholder="Write a task name" value={taskItem.taskText} onChange={e => { taskItem.taskText = e.target.value; this.setState({}) }} style={{ width: "100%", boxSizing: "border-box" }} />
-                                            </Editable>
+                                    <>
+                                        <Styler xs={{ gtc: "1fr 30px 10px", cg: "5px", mb: "4px", d: "grid", ai: "center",ht:"30px" }} key={taskItem.taskId} className="task">
+                                            <Styler xs={{ mw: "600px", ellipsis: "" }}>
+                                                <Editable text={taskItem.taskText} placeholder="Write a task name" type="input" update={() => this.updateTask(taskItem)}>
+                                                    <input type="text" name="task" placeholder="Write a task name" value={taskItem.taskText} onChange={e => { taskItem.taskText = e.target.value; this.setState({}) }} style={{ width: "100%", boxSizing: "border-box" }} />
+                                                </Editable>
+                                            </Styler>
+                                            <TaskPriority task={taskItem} updateTask={this.updateTask}></TaskPriority>
+                                            <Styler onClick={() => { this.editTask = taskItem; this.setState({}) }} xs={{ als: "center" }}>
+                                                <FontAwesomeIcon icon={faEdit} className="awesome-icon" />
+                                            </Styler>
                                         </Styler>
-                                        <TaskPriority task={this.appState.tasks[0]} updateTask={this.updateTask}></TaskPriority>
-                                        <Styler onClick={() => { this.editTask = taskItem; this.setState({}) }} xs={{ als: "center" }}>
-                                            <FontAwesomeIcon icon={faEdit} className="awesome-icon" />
-                                        </Styler>
-                                    </Styler>
+                                        <hr></hr>
+                                    </>
+
                                 )}
 
                             </Styler>
@@ -172,7 +178,6 @@ export class Todo extends React.Component {
             </Styler>
         )
     }
-
 
 }
 

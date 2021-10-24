@@ -47,11 +47,11 @@ class Editable extends React.Component {
             <div
                 onKeyDown={e => this.handleKeyDown(e)}
                 ref={this.editRef}
-                style={{ width: this.props.width, margin: "0px", display: "grid" }}
+                style={{ display: "grid" }}
             >
                 {this.isEditing && this.props.children}
                 {!this.isEditing &&
-                    <Styler as="span" xs={{ wd: "100%" }}>
+                    <Styler as="span" xs={{ wd: "100%", ellipsis: "" }}>
                         {this.props.text || this.props.placeholder || "Editable content"}
                     </Styler>
                 }
