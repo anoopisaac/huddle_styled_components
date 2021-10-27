@@ -8,10 +8,10 @@ export class Task {
     isUrgent!: boolean;
     subTasks!: SubTask[];
     duration!: number;
-    status!: TaskStatus;
+    taskStatus!: TaskStatus;
 }
-export enum TaskStatus{
-    NOTDONE,DONE
+export enum TaskStatus {
+    NOTDONE, DONE
 }
 
 

@@ -60,3 +60,15 @@ hr{
     border-color: rgba(0, 0, 0, 0.12);
     border-bottom-width: thin;
 }
+
+// for styling react date component
+.react-datepicker-wrapper{
+    display: grid !important;
+    .react-datepicker__input-container{
+        display: grid !important;
+        input{
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+}

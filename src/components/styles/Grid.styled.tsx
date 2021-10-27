@@ -5,21 +5,21 @@ let cssDic: { [id: string]: string; } = {};
 export const Styler: any = styled.div`
   font-family: 'Roboto', sans-serif;
   // making sure css dictionary from earlier element is not carry forwarded
-  ${()=>{cssDic={}; return ""}}
+  ${() => { cssDic = {}; return "" }}
   @media (min-width: 0px) {
     ${(props: any) => {
-      // only the xs here
-      if(props.xs!==undefined){
-        applyStyles(props.xs, cssDic);  
-        // const finalCssList: string[] = [];
-        const finalCssList: string[] = Object.keys(cssDic).map(key => {
-          return `${key}:${cssDic[key]};`
-        })
-        return finalCssList.join("");
-      }
-      return "";
-      
-    }}
+    // only the xs here
+    if (props.xs !== undefined) {
+      applyStyles(props.xs, cssDic);
+      // const finalCssList: string[] = [];
+      const finalCssList: string[] = Object.keys(cssDic).map(key => {
+        return `${key}:${cssDic[key]};`
+      })
+      return finalCssList.join("");
+    }
+    return "";
+
+  }}
   }
 
   // Small devices (landscape phones, 576px and up) sm
@@ -98,6 +98,8 @@ const styleDic: any = {
   bs: "box-sizing",
   ps: "position",
   top: "top",
+  gta: "grid-template-areas",
+  ga: "grid-area",
 }
 
 
