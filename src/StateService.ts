@@ -9,19 +9,11 @@ export function setGroupedTask(groupName: string) {
 
     let filteredTasks: Task[] = []
     const todayDateTime = new Date(new Date().toDateString()).getTime();
-
-
     if (groupName === TaskGroupNames.TODAY) {
         filteredTasks = tasks.filter(item => {
             const taskDate = new Date(item.dueDate);
             return taskDate.getTime() === todayDateTime
         })
-        // tasks.forEach(item => {
-        //     const taskDate = new Date(item.dueDate);
-        //     if (taskDate.getTime() === todayDateTime) {
-        //         filteredTasks.push(item);
-        //     }
-        // })
     } else if (groupName === TaskGroupNames.ANY_DAY) {
         filteredTasks = tasks;
     }
@@ -35,7 +27,7 @@ export function fetchTasks(groupName: string) {
         .then(res => res.json())
         .then(
             (result) => {
-                state.tasks = result.Items;
+                state.tasks = result.Items.sort((a: Task, b: Task) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
                 setGroupedTask(groupName);
                 messageService.sendMessage("done");
             },

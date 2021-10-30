@@ -62,7 +62,7 @@ hr{
 }
 
 //setting borderbox
-input{
+input[type=text],input[type=number]{
     box-sizing: border-box;
     height: 20px !important;
     font-size: small !important;

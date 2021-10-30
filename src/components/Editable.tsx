@@ -58,7 +58,7 @@ class Editable extends React.Component {
                 {this.isEditing && this.props.children}
                 {!this.isEditing &&
                     <Styler as="span" xs={{ wd: "100%", ellipsis: "" }}>
-                        {this.props.text || this.props.placeholder || "Editable content"}
+                        {this.props.text}
                     </Styler>
                 }
             </Styler>

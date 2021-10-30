@@ -84,7 +84,8 @@ export class Todo extends React.Component {
         newTask.dueDate = `${taskDate.getFullYear()}-${taskDate.getMonth() + 1}-${taskDate.getDate()}`
         newTask.taskText = "have fun";
         newTask.priority = "high";
-        newTask.subTasks = [{ taskText: "", taskStatus: TaskStatus.NOTDONE, subTaskId: this.generateRandomId() }];
+        newTask.subTasks = [];
+        // newTask.subTasks = [{ taskText: "", taskStatus: TaskStatus.NOTDONE, subTaskId: this.generateRandomId() }];
         newTask.tags = "fun";
         newTask.taskId = this.generateRandomId();
         newTask.userProject = "anoop#personal"
@@ -123,17 +124,23 @@ export class Todo extends React.Component {
         Object.assign(task, { dueDate: dateString })
         this.updateTask(task);
         this.setState({});
-
     }
-
     closeModal = () => {
         // console.log(getState().hello);
         this.editTask = undefined;
         this.setState({})
     }
+    toggleTaskStatus = (parentTask: Task, task: Task | SubTask) => {
+        task.taskStatus = task.taskStatus === TaskStatus.NOTDONE ? TaskStatus.DONE : TaskStatus.NOTDONE;
+        this.updateTask(parentTask);
+        this.setState({});
+    }
     toggleSubTask = (taskItem: Task) => {
         taskItem._isSubTaskOpen = taskItem._isSubTaskOpen !== true ? true : false;
         this.setState({});
+    }
+    onDurationBlur = (task: Task) => {
+        this.updateTask(task);
     }
     render() {
         const selectedTaskGroup = this.appState?.selectedTaskGroup;
@@ -160,15 +167,16 @@ export class Todo extends React.Component {
                                 {selectedTaskGroup.tasks.map(taskItem =>
                                     <Styler key={taskItem.taskId} xs={{ gar: "max-content" }}>
                                         <Styler xs={{ gtc: "10px 20px 1fr 40px 75px 10px", gta: "'down-arrow check task duration date priority'", cg: "5px", mb: "4px", d: "grid", ai: "center", ht: "30px" }} className="task">
-                                            <FontAwesomeIcon icon={taskItem._isSubTaskOpen === true ? faAngleUp : faAngleDown} className="awesome-icon" style={{ gridArea: "down-arrow" }} onClick={() => this.toggleSubTask(taskItem)} />
-                                            <Checkbox checked={taskItem.taskStatus === TaskStatus.DONE} onChange={() => { taskItem.taskStatus = (taskItem.taskStatus === TaskStatus.DONE ? TaskStatus.NOTDONE : TaskStatus.DONE); this.updateTask(taskItem); this.setState({}) }} inputProps={{ 'aria-label': 'controlled' }} style={{ gridArea: "check" }} size="small" />
+                                            {taskItem.subTasks.length > 0 && < FontAwesomeIcon icon={taskItem._isSubTaskOpen === true ? faAngleUp : faAngleDown} className="awesome-icon" style={{ gridArea: "down-arrow", cursor: "pointer" }} onClick={() => this.toggleSubTask(taskItem)} />}
+                                            {taskItem.subTasks.length == 0 && <div style={{ gridArea: "down-arrow" }}></div>}
+                                            <Checkbox checked={taskItem.taskStatus === TaskStatus.DONE} onChange={() => this.toggleTaskStatus(taskItem, taskItem)} inputProps={{ 'aria-label': 'controlled' }} style={{ gridArea: "check" }} size="small" />
                                             <Styler xs={{ mw: "600px", ga: "task" }}>
-                                                <Editable text={taskItem.taskText} placeholder="Write a task name" type="input" update={() => this.updateTask(taskItem)}>
-                                                    <input type="text" name="task" placeholder="Write a task name" value={taskItem.taskText} onChange={e => { taskItem.taskText = e.target.value; this.setState({}) }} style={{ width: "100%", boxSizing: "border-box", height: "20px", fontSize: "small" }} />
+                                                <Editable text={taskItem.taskText} type="input" update={() => this.updateTask(taskItem)}>
+                                                    <input type="text" name="taskText" placeholder="Write a task name" value={taskItem.taskText} onChange={e => this.onChange(e, taskItem)} style={{ width: "100%", boxSizing: "border-box", height: "20px", fontSize: "small" }} />
                                                 </Editable>
                                             </Styler>
                                             {/* <input type="date" id="start" name={'dueDate'} value={taskItem.dueDate} onChange={(event: any) => this.onChange(event, taskItem)} data-date-inline-picker="true"/> */}
-                                            <input type="text" name="duration" id="" style={{ width: "90%", gridArea: 'duration', justifySelf: "center" }} />
+                                            <input type="text" name="duration" id="" style={{ width: "90%", gridArea: 'duration', justifySelf: "center" }} value={taskItem.duration} onChange={e => this.onChange(e, taskItem)} onBlur={e => this.onDurationBlur(taskItem)} />
                                             <DatePicker
                                                 selected={new Date(taskItem.dueDate)}
                                                 onChange={(date) => this.onDateChange(taskItem, date)}
@@ -182,20 +190,9 @@ export class Todo extends React.Component {
                                             </Styler> */}
                                         </Styler>
                                         <hr></hr>
-                                        {taskItem._isSubTaskOpen === true && taskItem.subTasks.map((subTask: SubTask) => {
-                                            return <React.Fragment key={subTask.subTaskId}>
-                                                <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gtc: "20px 1fr", cg: "5px", mb: "4px" }} >
-                                                    <Checkbox checked={taskItem.taskStatus === TaskStatus.DONE} onChange={() => { taskItem.taskStatus = (taskItem.taskStatus === TaskStatus.DONE ? TaskStatus.NOTDONE : TaskStatus.DONE); this.updateTask(taskItem); this.setState({}) }} inputProps={{ 'aria-label': 'controlled' }} size="small" />
-                                                    <Editable text={taskItem.taskText} placeholder="Write a task name" type="input" update={() => this.updateTask(taskItem)} xs={{ als: "center", ht: "20px" }}>
-                                                        <input type="text" name="task" placeholder="Write a task name" value={taskItem.taskText} onChange={e => { taskItem.taskText = e.target.value; this.setState({}) }} style={{ width: "100%", boxSizing: "border-box", height: "20px", fontSize: "small" }} />
-                                                    </Editable>
-                                                </Styler>
-                                                <Styler as="hr" xs={{ wd: "90%", jus: "end" }}></Styler>
-                                            </React.Fragment>
-                                        })}
+                                        <SubTasks taskItem={taskItem} todo={this}></SubTasks>
                                     </Styler>
                                 )}
-
                             </Styler>
                         </Styler>
                     )
@@ -221,6 +218,24 @@ const TaskPriority: any = (props: any) => {
         </Styler>
 
     );
+}
+
+const SubTasks: any = (props: { taskItem: Task, todo: Todo }) => {
+    const { taskItem, todo } = props;
+    // const taskItem;
+    return (
+        taskItem._isSubTaskOpen === true && taskItem.subTasks.map((subTask: SubTask) => {
+            return <React.Fragment key={subTask.subTaskId}>
+                <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gtc: "20px 1fr", cg: "5px", mb: "4px" }} >
+                    <Checkbox checked={subTask.taskStatus === TaskStatus.DONE} onChange={() => todo.toggleTaskStatus(taskItem, subTask)} inputProps={{ 'aria-label': 'controlled' }} size="small" />
+                    <Editable text={subTask.taskText} placeholder="Write a task name" type="input" update={() => todo.updateTask(taskItem)} xs={{ als: "center", ht: "20px" }}>
+                        <input type="text" name="task" placeholder="Write a task name" value={subTask.taskText} onChange={e => { subTask.taskText = e.target.value; todo.setState({}) }} style={{ width: "100%", boxSizing: "border-box", height: "20px", fontSize: "small" }} />
+                    </Editable>
+                </Styler>
+                <Styler as="hr" xs={{ wd: "90%", jus: "end" }}></Styler>
+            </React.Fragment>
+        })
+    )
 }
 
 
