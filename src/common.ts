@@ -3,16 +3,21 @@ export class Task {
     taskId!: string;
     taskText!: string;
     dueDate!: string;
-    tags!: string;
+    tags!: string[];
     priority!: string;
     isUrgent!: boolean;
     subTasks!: SubTask[];
     duration!: number;
     taskStatus!: TaskStatus;
     _isSubTaskOpen = false;
+    _isTagOpen = false;
 }
 export enum TaskStatus {
     NOTDONE, DONE
+}
+
+export enum SortOrder {
+    ASC, DESC
 }
 
 

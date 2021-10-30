@@ -1,4 +1,4 @@
-import { AppState, Task, TaskGroup, TaskGroupNames } from "./common";
+import { AppState, SortOrder, Task, TaskGroup, TaskGroupNames } from "./common";
 import { messageService } from "./Message";
 
 const state: AppState = new AppState();
@@ -38,5 +38,9 @@ export function fetchTasks(groupName: string) {
                 // this.tasks = [];
             }
         )
+}
+
+export function sortTaskFn(sortOrder: SortOrder, tasks: Task[]) {
+    return tasks.sort((a, b) => (new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()) * (sortOrder === SortOrder.DESC ? 1 : -1))
 }
 

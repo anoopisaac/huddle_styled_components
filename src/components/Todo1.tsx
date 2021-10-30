@@ -2,15 +2,15 @@ import { Styler } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
-import { AppState, SubTask, Task, TaskGroup, TaskGroupNames, TaskStatus } from '../common';
+import { AppState, SortOrder, SubTask, Task, TaskGroup, TaskGroupNames, TaskStatus } from '../common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp, faArrowDown, faCalendar, faCoffee, faEdit, faExpandArrowsAlt } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp, faArrowDown, faCalendar, faCoffee, faEdit, faExpandArrowsAlt, faTag } from '@fortawesome/free-solid-svg-icons';
 import './styles/common.scss'
-import { fetchTasks, getState } from '../StateService';
+import { fetchTasks, getState, sortTaskFn } from '../StateService';
 import { messageService } from '../Message';
 import { Subscription } from 'rxjs';
 import Editable from './Editable';
-import { Checkbox, Divider } from '@mui/material';
+import { Button, Checkbox, Divider } from '@mui/material';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -86,7 +86,7 @@ export class Todo extends React.Component {
         newTask.priority = "high";
         newTask.subTasks = [];
         // newTask.subTasks = [{ taskText: "", taskStatus: TaskStatus.NOTDONE, subTaskId: this.generateRandomId() }];
-        newTask.tags = "fun";
+        newTask.tags = [];
         newTask.taskId = this.generateRandomId();
         newTask.userProject = "anoop#personal"
         newTask.isUrgent = false;
@@ -139,8 +139,22 @@ export class Todo extends React.Component {
         taskItem._isSubTaskOpen = taskItem._isSubTaskOpen !== true ? true : false;
         this.setState({});
     }
+    toggleTags = (taskItem: Task) => {
+        taskItem._isTagOpen = taskItem._isTagOpen !== true ? true : false;
+        this.setState({});
+    }
+    currentSortOrder = SortOrder.DESC;
+    sortTask = () => {
+        const selectedTaskGroup = this.appState?.selectedTaskGroup
+        this.currentSortOrder = this.currentSortOrder === SortOrder.DESC ? SortOrder.ASC : SortOrder.DESC;
+        selectedTaskGroup.tasks = sortTaskFn(this.currentSortOrder, selectedTaskGroup.tasks);
+        this.setState({});
+    }
     onDurationBlur = (task: Task) => {
         this.updateTask(task);
+    }
+    addTag = (task: Task, tag: string) => {
+        task.tags.push(tag);
     }
     render() {
         const selectedTaskGroup = this.appState?.selectedTaskGroup;
@@ -152,7 +166,11 @@ export class Todo extends React.Component {
                 {
                     (selectedTaskGroup &&
                         <Styler xs={{ gar: "30px 40px 1fr", br: "5px", p: "10px" }} key={selectedTaskGroup.groupId} className="task-group">
-                            <Styler as="span" als="center">{selectedTaskGroup.groupTitle}</Styler>
+                            <Styler xs={{ gtc: "max-content 1fr max-content" }}>
+                                <Styler as="span" als="center">{selectedTaskGroup.groupTitle}</Styler>
+                                <div></div>
+                                <Button variant="outlined" size="small" onClick={() => this.sortTask()}>Sort</Button>
+                            </Styler>
                             <Styler xs={{ als: "center" }} >
                                 <input type="text" name="" id="" className="form-control add-task" placeholder="Add Task"
                                     onKeyDown={(e: any) => {
@@ -166,7 +184,7 @@ export class Todo extends React.Component {
                             <Styler xs={{ gar: "max-content" }} >
                                 {selectedTaskGroup.tasks.map(taskItem =>
                                     <Styler key={taskItem.taskId} xs={{ gar: "max-content" }}>
-                                        <Styler xs={{ gtc: "10px 20px 1fr 40px 75px 10px", gta: "'down-arrow check task duration date priority'", cg: "5px", mb: "4px", d: "grid", ai: "center", ht: "30px" }} className="task">
+                                        <Styler xs={{ gtc: "10px 20px 1fr 40px 75px 10px 10px", gta: "'down-arrow check task duration date priority tag'", cg: "5px", mb: "4px", d: "grid", ai: "center", ht: "30px" }} className="task">
                                             {taskItem.subTasks.length > 0 && < FontAwesomeIcon icon={taskItem._isSubTaskOpen === true ? faAngleUp : faAngleDown} className="awesome-icon" style={{ gridArea: "down-arrow", cursor: "pointer" }} onClick={() => this.toggleSubTask(taskItem)} />}
                                             {taskItem.subTasks.length == 0 && <div style={{ gridArea: "down-arrow" }}></div>}
                                             <Checkbox checked={taskItem.taskStatus === TaskStatus.DONE} onChange={() => this.toggleTaskStatus(taskItem, taskItem)} inputProps={{ 'aria-label': 'controlled' }} style={{ gridArea: "check" }} size="small" />
@@ -184,6 +202,7 @@ export class Todo extends React.Component {
                                                 onCalendarOpen={() => { }}
                                             />
                                             <TaskPriority task={taskItem} updateTask={this.updateTask} style={{ gridArea: "priority" }} ga="priority"></TaskPriority>
+                                            < FontAwesomeIcon icon={faTag} className="awesome-icon" style={{ gridArea: "tag", cursor: "pointer" }} onClick={() => this.toggleTags(taskItem)} />
 
                                             {/* <Styler onClick={() => { this.editTask = taskItem; this.setState({}) }} xs={{ als: "center" }}>
                                                 <FontAwesomeIcon icon={faEdit} className="awesome-icon" />
@@ -191,6 +210,7 @@ export class Todo extends React.Component {
                                         </Styler>
                                         <hr></hr>
                                         <SubTasks taskItem={taskItem} todo={this}></SubTasks>
+                                        <Tags taskItem={taskItem} todo={this}></Tags>
                                     </Styler>
                                 )}
                             </Styler>
@@ -237,7 +257,29 @@ const SubTasks: any = (props: { taskItem: Task, todo: Todo }) => {
         })
     )
 }
+const Tags: any = (props: { taskItem: Task, todo: Todo }) => {
+    const { taskItem, todo } = props;
+    // const taskItem;
+    return (
+        <React.Fragment>
+            {taskItem._isTagOpen === true && <input type="text" name="" id="" className="form-control add-tags" placeholder="Add tag"
+                onKeyDown={(e: any) => {
+                    if (e.code === "Enter") {
+                        todo.addTag(taskItem, e.target.value);
+                        e.target.value = ""
+                    }
+                }}
+            />}
+            {taskItem.tags.map((tag: string, index: number) => {
+                <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gac: "20px", cg: "5px", mb: "4px" }} key={index} >
+                    <Styler xs={{ br: "5px", ht: "20px", wd: "100%", bdr: "1px solid red" }}>{tag}</Styler>
+                </Styler>
+            })}
 
+        </React.Fragment>
+
+    )
+}
 
 
 function hello() {
