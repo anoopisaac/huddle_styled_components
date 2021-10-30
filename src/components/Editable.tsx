@@ -26,28 +26,34 @@ class Editable extends React.Component {
 
     }
     handleClick = (e: any) => {
-        if (this.editRef.current.contains(e.target)) {
-            if (this.isEditing === false) {
-                this.isEditing = true;
+        if (this.editRef?.current !== undefined && this.editRef?.current !== null) {
+            if (this.editRef.current.contains(e.target)) {
+                if (this.isEditing === false) {
+                    this.isEditing = true;
+                    this.setState({});
+                }
+            } else {
+                if (this.isEditing === true) {
+                    this.isEditing = false;
+                    this.props.update();
+                    this.setState({});
+                }
             }
-        } else {
-            if (this.isEditing === true) {
-                this.isEditing = false;
-                this.props.update();
-            }
+
         }
-        this.setState({});
+
     }
     componentWillUnmount() {
+        document.removeEventListener("click", this.handleClick);
         return () => document.removeEventListener("click", this.handleClick);
     }
 
     render() {
         return (
-            <div
-                onKeyDown={e => this.handleKeyDown(e)}
+            <Styler
+                onKeyDown={(e: any) => this.handleKeyDown(e)}
                 ref={this.editRef}
-                style={{ display: "grid" }}
+                xs={this.props.xs}
             >
                 {this.isEditing && this.props.children}
                 {!this.isEditing &&
@@ -55,7 +61,7 @@ class Editable extends React.Component {
                         {this.props.text || this.props.placeholder || "Editable content"}
                     </Styler>
                 }
-            </div>
+            </Styler>
         )
     }
 

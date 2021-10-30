@@ -2,9 +2,9 @@ import { Styler } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
-import { AppState, Task, TaskGroup, TaskGroupNames, TaskStatus } from '../common';
+import { AppState, SubTask, Task, TaskGroup, TaskGroupNames, TaskStatus } from '../common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoffee, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp, faArrowDown, faCalendar, faCoffee, faEdit, faExpandArrowsAlt } from '@fortawesome/free-solid-svg-icons';
 import './styles/common.scss'
 import { fetchTasks, getState } from '../StateService';
 import { messageService } from '../Message';
@@ -76,15 +76,17 @@ export class Todo extends React.Component {
         this.updateTask(newTask);
     }
 
+    generateRandomId = () => Math.round(Math.random() * 10000000000) + "";
+
     getTask = () => {
         const newTask = new Task();
         const taskDate = new Date();
         newTask.dueDate = `${taskDate.getFullYear()}-${taskDate.getMonth() + 1}-${taskDate.getDate()}`
         newTask.taskText = "have fun";
         newTask.priority = "high";
-        newTask.subTasks = [{ taskText: "", status: "notdone" }];
+        newTask.subTasks = [{ taskText: "", taskStatus: TaskStatus.NOTDONE, subTaskId: this.generateRandomId() }];
         newTask.tags = "fun";
-        newTask.taskId = Math.round(Math.random() * 10000000000) + "";
+        newTask.taskId = this.generateRandomId();
         newTask.userProject = "anoop#personal"
         newTask.isUrgent = false;
         newTask.duration = 10;
@@ -129,6 +131,10 @@ export class Todo extends React.Component {
         this.editTask = undefined;
         this.setState({})
     }
+    toggleSubTask = (taskItem: Task) => {
+        taskItem._isSubTaskOpen = taskItem._isSubTaskOpen !== true ? true : false;
+        this.setState({});
+    }
     render() {
         const selectedTaskGroup = this.appState?.selectedTaskGroup;
         return (
@@ -141,7 +147,7 @@ export class Todo extends React.Component {
                         <Styler xs={{ gar: "30px 40px 1fr", br: "5px", p: "10px" }} key={selectedTaskGroup.groupId} className="task-group">
                             <Styler as="span" als="center">{selectedTaskGroup.groupTitle}</Styler>
                             <Styler xs={{ als: "center" }} >
-                                <input type="text" name="" id="" className="form-control" placeholder="Add Task"
+                                <input type="text" name="" id="" className="form-control add-task" placeholder="Add Task"
                                     onKeyDown={(e: any) => {
                                         if (e.code === "Enter") {
                                             this.insertOnEnter(e.target.value);
@@ -152,28 +158,42 @@ export class Todo extends React.Component {
                             </Styler>
                             <Styler xs={{ gar: "max-content" }} >
                                 {selectedTaskGroup.tasks.map(taskItem =>
-                                    <div key={taskItem.taskId} >
-                                        <Styler xs={{ gtc: "20px 1fr 10px 75px", gta: "'check task priority date'", cg: "5px", mb: "4px", d: "grid", ai: "center", ht: "30px" }} className="task">
+                                    <Styler key={taskItem.taskId} xs={{ gar: "max-content" }}>
+                                        <Styler xs={{ gtc: "10px 20px 1fr 40px 75px 10px", gta: "'down-arrow check task duration date priority'", cg: "5px", mb: "4px", d: "grid", ai: "center", ht: "30px" }} className="task">
+                                            <FontAwesomeIcon icon={taskItem._isSubTaskOpen === true ? faAngleUp : faAngleDown} className="awesome-icon" style={{ gridArea: "down-arrow" }} onClick={() => this.toggleSubTask(taskItem)} />
                                             <Checkbox checked={taskItem.taskStatus === TaskStatus.DONE} onChange={() => { taskItem.taskStatus = (taskItem.taskStatus === TaskStatus.DONE ? TaskStatus.NOTDONE : TaskStatus.DONE); this.updateTask(taskItem); this.setState({}) }} inputProps={{ 'aria-label': 'controlled' }} style={{ gridArea: "check" }} size="small" />
                                             <Styler xs={{ mw: "600px", ga: "task" }}>
                                                 <Editable text={taskItem.taskText} placeholder="Write a task name" type="input" update={() => this.updateTask(taskItem)}>
-                                                    <input type="text" name="task" placeholder="Write a task name" value={taskItem.taskText} onChange={e => { taskItem.taskText = e.target.value; this.setState({}) }} style={{ width: "100%", boxSizing: "border-box", height: "25px" }} />
+                                                    <input type="text" name="task" placeholder="Write a task name" value={taskItem.taskText} onChange={e => { taskItem.taskText = e.target.value; this.setState({}) }} style={{ width: "100%", boxSizing: "border-box", height: "20px", fontSize: "small" }} />
                                                 </Editable>
                                             </Styler>
-                                            <TaskPriority task={taskItem} updateTask={this.updateTask} style={{ gridArea: "priority" }} ga="priority"></TaskPriority>
                                             {/* <input type="date" id="start" name={'dueDate'} value={taskItem.dueDate} onChange={(event: any) => this.onChange(event, taskItem)} data-date-inline-picker="true"/> */}
+                                            <input type="text" name="duration" id="" style={{ width: "90%", gridArea: 'duration', justifySelf: "center" }} />
                                             <DatePicker
                                                 selected={new Date(taskItem.dueDate)}
                                                 onChange={(date) => this.onDateChange(taskItem, date)}
                                                 onCalendarClose={() => { }}
                                                 onCalendarOpen={() => { }}
                                             />
+                                            <TaskPriority task={taskItem} updateTask={this.updateTask} style={{ gridArea: "priority" }} ga="priority"></TaskPriority>
+
                                             {/* <Styler onClick={() => { this.editTask = taskItem; this.setState({}) }} xs={{ als: "center" }}>
                                                 <FontAwesomeIcon icon={faEdit} className="awesome-icon" />
                                             </Styler> */}
                                         </Styler>
                                         <hr></hr>
-                                    </div>
+                                        {taskItem._isSubTaskOpen === true && taskItem.subTasks.map((subTask: SubTask) => {
+                                            return <React.Fragment key={subTask.subTaskId}>
+                                                <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gtc: "20px 1fr", cg: "5px", mb: "4px" }} >
+                                                    <Checkbox checked={taskItem.taskStatus === TaskStatus.DONE} onChange={() => { taskItem.taskStatus = (taskItem.taskStatus === TaskStatus.DONE ? TaskStatus.NOTDONE : TaskStatus.DONE); this.updateTask(taskItem); this.setState({}) }} inputProps={{ 'aria-label': 'controlled' }} size="small" />
+                                                    <Editable text={taskItem.taskText} placeholder="Write a task name" type="input" update={() => this.updateTask(taskItem)} xs={{ als: "center", ht: "20px" }}>
+                                                        <input type="text" name="task" placeholder="Write a task name" value={taskItem.taskText} onChange={e => { taskItem.taskText = e.target.value; this.setState({}) }} style={{ width: "100%", boxSizing: "border-box", height: "20px", fontSize: "small" }} />
+                                                    </Editable>
+                                                </Styler>
+                                                <Styler as="hr" xs={{ wd: "90%", jus: "end" }}></Styler>
+                                            </React.Fragment>
+                                        })}
+                                    </Styler>
                                 )}
 
                             </Styler>

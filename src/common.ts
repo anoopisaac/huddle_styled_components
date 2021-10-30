@@ -9,6 +9,7 @@ export class Task {
     subTasks!: SubTask[];
     duration!: number;
     taskStatus!: TaskStatus;
+    _isSubTaskOpen = false;
 }
 export enum TaskStatus {
     NOTDONE, DONE
@@ -16,8 +17,9 @@ export enum TaskStatus {
 
 
 export class SubTask {
+    subTaskId!: string;
     taskText!: string;
-    status!: string;
+    taskStatus!: TaskStatus;
 }
 
 export class TaskGroup {

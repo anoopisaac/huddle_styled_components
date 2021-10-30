@@ -61,9 +61,20 @@ hr{
     border-bottom-width: thin;
 }
 
+//setting borderbox
+input{
+    box-sizing: border-box;
+    height: 20px !important;
+    font-size: small !important;
+    &.add-task{
+        height: 30px !important;
+    }
+}
+
 // for styling react date component
 .react-datepicker-wrapper{
     display: grid !important;
+    grid-area: "date";
     .react-datepicker__input-container{
         display: grid !important;
         input{
