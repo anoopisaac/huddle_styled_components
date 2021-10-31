@@ -1,4 +1,4 @@
-import { faCalendar, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { AppState } from "../common";
@@ -13,7 +13,7 @@ export class SideBar extends React.Component {
 
     render() {
         return (
-            <Styler xs={{ bgc: "#f3f5fe", gtr: "30px 30px 30px 30px 30px 1fr", p: "10px" }} >
+            <Styler xs={{ bgc: "#eaeaea", gtr: "30px 30px 30px 30px 30px 1fr", p: "10px", bdrr: "1px solid #d1d1d1" }} >
                 {AppState.taskGroupNames.map(taskGrpItem =>
                     <Styler xs={{ gtc: "30px 1fr", ai: "center", p: "10px" }} key={taskGrpItem}>
                         <span><FontAwesomeIcon icon={faCalendar} className="awesome-icon" /></span>

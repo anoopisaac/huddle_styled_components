@@ -1,6 +1,6 @@
 // Editable.js
-import { render } from "@testing-library/react";
-import React, { useEffect, useRef, useState } from "react";
+// import { render } from "@testing-library/react";
+import React from "react";
 import { Styler } from "./styles/Grid.styled";
 
 // Component accept text, placeholder values and also pass what type of Input - input, textarea so that we can use it for styling accordingly

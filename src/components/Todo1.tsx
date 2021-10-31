@@ -2,15 +2,15 @@ import { Styler } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
-import { AppState, SortOrder, SubTask, Task, TaskGroup, TaskGroupNames, TaskStatus } from '../common';
+import { AppState, SortOrder, SubTask, Tag, Task, TaskGroup, TaskGroupNames, TaskStatus } from '../common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp, faArrowDown, faCalendar, faCoffee, faEdit, faExpandArrowsAlt, faTag } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp, faTag } from '@fortawesome/free-solid-svg-icons';
 import './styles/common.scss'
 import { fetchTasks, getState, sortTaskFn } from '../StateService';
 import { messageService } from '../Message';
 import { Subscription } from 'rxjs';
 import Editable from './Editable';
-import { Button, Checkbox, Divider } from '@mui/material';
+import { Button, Checkbox } from '@mui/material';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -96,7 +96,7 @@ export class Todo extends React.Component {
     }
 
     insertUpdateRemoteTask = async (isInsert: boolean, task: Task) => {
-        const taskId = Math.round(Math.random() * 10000000000);
+        // const taskId = Math.round(Math.random() * 10000000000);
         const response = await fetch('https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo', {
             method: isInsert ? 'POST' : 'PATCH',
             headers: {
@@ -153,8 +153,8 @@ export class Todo extends React.Component {
     onDurationBlur = (task: Task) => {
         this.updateTask(task);
     }
-    addTag = (task: Task, tag: string) => {
-        task.tags.push(tag);
+    addTag = (task: Task, name: string) => {
+        task.tags.push({ name });
         this.setState({})
     }
     addSubTask = (task: Task, taskText: string) => {
@@ -195,7 +195,7 @@ export class Todo extends React.Component {
                                             <Checkbox checked={taskItem.taskStatus === TaskStatus.DONE} onChange={() => this.toggleTaskStatus(taskItem, taskItem)} inputProps={{ 'aria-label': 'controlled' }} style={{ gridArea: "check" }} size="small" />
                                             <Styler xs={{ mw: "600px", ga: "task" }}>
                                                 <Editable text={taskItem.taskText} type="input" update={() => this.updateTask(taskItem)}>
-                                                    <Styler as="input" type="text" name="taskText" placeholder="Task" value={taskItem.taskText} onChange={(e: any) => this.onChange(e, taskItem)} xs={{ wd: "100%", bs: "border-box", ht: "20px", fs: "small", bdr: "1px solid #ced4da",pl:"3px" }} />
+                                                    <Styler as="input" type="text" name="taskText" placeholder="Task" value={taskItem.taskText} onChange={(e: any) => this.onChange(e, taskItem)} xs={{ wd: "100%", bs: "border-box", ht: "20px", fs: "small", bdr: "1px solid #ced4da", pl: "3px" }} />
                                                 </Editable>
                                             </Styler>
                                             {/* <input type="date" id="start" name={'dueDate'} value={taskItem.dueDate} onChange={(event: any) => this.onChange(event, taskItem)} data-date-inline-picker="true"/> */}
@@ -276,21 +276,45 @@ const SubTasks: any = (props: { taskItem: Task, todo: Todo }) => {
     )
 }
 const Tags: any = (props: { taskItem: Task, todo: Todo }) => {
+
     const { taskItem, todo } = props;
+    const [selectedTags, setSelectdTags] = useState(taskItem.tags);
+    const [allTags, setAllTags] = useState(todo.appState.tags);
     // const taskItem;
+    if (taskItem._isTagOpen !== true) {
+        return (<></>);
+    }
+
+    const selectTag = (tag: Tag) => {
+        const selTagIndex = taskItem.tags.findIndex(item => item.name === tag.name);
+        if (selTagIndex > -1) {
+            taskItem.tags.splice(selTagIndex, 1);
+        } else {
+            taskItem.tags.push({ name: tag.name });
+        }
+        // taskItem.tags = [...taskItem.tags];
+        // setSelectdTags(taskItem.tags);
+        todo.updateTask(taskItem);
+    }
     return (
         <React.Fragment>
-            {taskItem._isTagOpen === true && <input type="text" name="" id="" className="form-control add-tags" placeholder="Add tag" style={{ marginTop: "5px" }}
-                onKeyDown={(e: any) => {
-                    if (e.code === "Enter") {
-                        todo.addTag(taskItem, e.target.value);
-                        e.target.value = ""
-                    }
-                }}
-            />}
-            {taskItem._isTagOpen === true && taskItem.tags.map((tag: string, index: number) => {
+            {allTags.map(tag => {
+                tag._isSelected = (selectedTags.find(selTag => selTag.name === tag.name) !== undefined ? true : false)
+            })}
+            <Styler xs={{ gac: "max-content", cg: "5px", mt: "5px" }}>
+                {allTags.map((tag: Tag, index: number) => {
+                    return <Styler xs={{ br: "5px", wd: "40px", bdr: "1px solid #a3a3a3", cr: "pointer", p: "3px", d: "grid", pi: "center", bgc: tag._isSelected === true ? "#bdbcbc" : "#e2e2e2" }} key={index} onClick={() => selectTag(tag)}>
+                        <span className="txt">{tag.name}</span>
+                    </Styler>
+                    // #8fc6f0
+                    // return <Button variant="outlined" size="small" onClick={() => { }} key={index} style={{ width: "100%" }}>{tag}</Button>
+                })}
+            </Styler>
+
+
+            {taskItem.tags.map((tag: Tag, index: number) => {
                 <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gac: "20px", cg: "5px", mb: "4px" }} key={index} >
-                    <Styler xs={{ br: "5px", ht: "20px", wd: "100%", bdr: "1px solid red" }}>{tag}</Styler>
+                    <Styler xs={{ br: "5px", ht: "20px", wd: "100%", bdr: "1px solid red" }}>{tag.name}</Styler>
                 </Styler>
             })}
 

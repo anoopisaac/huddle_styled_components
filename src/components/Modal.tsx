@@ -1,6 +1,6 @@
-import react, { useEffect, useState } from "react"
+// import react, { useEffect, useState } from "react"
 import { Styler } from "./styles/Grid.styled";
-import { StyledModal } from "./styles/Modal.styled"
+// import { StyledModal } from "./styles/Modal.styled"
 
 export default function Modal(props: any) {
     // const [isOn, setIsOn] = useState(props.trigger !== undefined);
