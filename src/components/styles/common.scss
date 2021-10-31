@@ -9,10 +9,11 @@ body{
     }
 }
 .form-control{
+    height: 28px;
+    font-size: 13px;
     display: block;
     width: 100%;
     padding: .375rem .75rem;
-    font-size: 1rem;
     line-height: 1.5;
     color: #495057;
     background-color: #fff;
@@ -61,14 +62,16 @@ hr{
     border-bottom-width: thin;
 }
 
+span.txt{
+    font-family: 'Roboto';
+    font-size: 13px;
+}
+
 //setting borderbox
-input[type=text],input[type=number]{
+.row-input{
     box-sizing: border-box;
     height: 20px !important;
     font-size: small !important;
-    &.add-task{
-        height: 30px !important;
-    }
 }
 
 // for styling react date component

@@ -3,7 +3,6 @@ import styled from 'styled-components'
 let cssDic: { [id: string]: string; } = {};
 
 export const Styler: any = styled.div`
-  font-family: 'Roboto', sans-serif;
   // making sure css dictionary from earlier element is not carry forwarded
   ${() => { cssDic = {}; return "" }}
   @media (min-width: 0px) {
@@ -86,6 +85,7 @@ const styleDic: any = {
   rg: "row-gap",
   br: "border-radius",
   p: "padding",
+  pl: "padding-left",
   bdr: "border",
   bb: "border-bottom",
   ai: "align-items",

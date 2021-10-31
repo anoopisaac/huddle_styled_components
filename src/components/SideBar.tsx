@@ -17,7 +17,7 @@ export class SideBar extends React.Component {
                 {AppState.taskGroupNames.map(taskGrpItem =>
                     <Styler xs={{ gtc: "30px 1fr", ai: "center", p: "10px" }} key={taskGrpItem}>
                         <span><FontAwesomeIcon icon={faCalendar} className="awesome-icon" /></span>
-                        <Styler xs={{ cr: "pointer" }} as="span" cr="pointer">{taskGrpItem}</Styler>
+                        <Styler xs={{ cr: "pointer" }} as="span" cr="pointer" className="txt">{taskGrpItem}</Styler>
                     </Styler>
                 )
                 }
