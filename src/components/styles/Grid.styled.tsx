@@ -101,7 +101,8 @@ const styleDic: any = {
   gta: "grid-template-areas",
   ga: "grid-area",
   pi: "place-items",
-  bdrr: "border-right"
+  bdrr: "border-right",
+  bxs: "box-shadow"
 }
 
 
