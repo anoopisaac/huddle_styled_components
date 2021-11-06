@@ -13,6 +13,7 @@ import Editable from './Editable';
 import { Button, Checkbox } from '@mui/material';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { HighlightSpanKind } from 'typescript';
 
 
 declare var window: any;
@@ -195,7 +196,7 @@ export class Todo extends React.Component {
                                             <Checkbox checked={taskItem.taskStatus === TaskStatus.DONE} onChange={() => this.toggleTaskStatus(taskItem, taskItem)} inputProps={{ 'aria-label': 'controlled' }} style={{ gridArea: "check" }} size="small" />
                                             <Styler xs={{ mw: "600px", ga: "task" }}>
                                                 <Editable text={taskItem.taskText} type="input" update={() => this.updateTask(taskItem)}>
-                                                    <Styler as="input" type="text" name="taskText" placeholder="Task" value={taskItem.taskText} onChange={(e: any) => this.onChange(e, taskItem)} xs={{ wd: "100%", bs: "border-box", ht: "20px", fs: "small", bdr: "1px solid #ced4da", pl: "3px" }} />
+                                                    <Styler as="input" type="text" name="taskText" placeholder="Task" value={taskItem.taskText} onChange={(e: any) => this.onChange(e, taskItem)} xs={{ wd: "100%", bs: "border-box", ht: "23px", fs: "small", bdr: "1px solid #ced4da", pl: "3px", br: "3px" }} />
                                                 </Editable>
                                             </Styler>
                                             {/* <input type="date" id="start" name={'dueDate'} value={taskItem.dueDate} onChange={(event: any) => this.onChange(event, taskItem)} data-date-inline-picker="true"/> */}
@@ -265,7 +266,7 @@ const SubTasks: any = (props: { taskItem: Task, todo: Todo }) => {
                         <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gtc: "20px 1fr", cg: "5px", mb: "4px" }} >
                             <Checkbox checked={subTask.taskStatus === TaskStatus.DONE} onChange={() => todo.toggleTaskStatus(taskItem, subTask)} inputProps={{ 'aria-label': 'controlled' }} size="small" />
                             <Editable text={subTask.taskText} placeholder="Write a task name" type="input" update={() => todo.updateTask(taskItem)} xs={{ als: "center", ht: "20px" }}>
-                                <input type="text" name="task" placeholder="Write a task name" value={subTask.taskText} onChange={e => { subTask.taskText = e.target.value; todo.setState({}) }} style={{ width: "100%", boxSizing: "border-box", height: "20px", fontSize: "small" }} />
+                                <Styler as="input" type="text" name="task" placeholder="Write a task name" value={subTask.taskText} onChange={(e:any) => { subTask.taskText = e.target.value; todo.setState({}) }} xs={{ wd: "100%", bs: "border-box", fs: "small", ht: "23px", bdr: "1px solid #ced4da", pl: "3px", br: "3px" }} />
                             </Editable>
                         </Styler>
                         <Styler as="hr" xs={{ wd: "90%", jus: "end" }}></Styler>
@@ -322,6 +323,30 @@ const Tags: any = (props: { taskItem: Task, todo: Todo }) => {
 
     )
 }
+
+class InlineInput extends React.Component<any> {
+    xs: {} = { wd: "100%", bs: "border-box", ht: "23px", fs: "small", bdr: "1px solid #ced4da", pl: "3px", br: "3px" };
+    constructor(props: any) {
+        super(props);
+        this.xs = this.props.xs !== undefined ? this.props.xs : this.xs;
+
+    }
+    componentWillMount() {
+
+    }
+    componentDidMount() {
+
+    }
+    render() {
+        return (
+            <Styler type={this.props.text} name={this.props.name} placeholder={this.props.placeholder} value={this.props.value} onChange={this.props.onChange} xs={this.props.xs} as="input">
+            </Styler>
+        );
+    }
+}
+
+
+export default Todo;
 
 
 function hello() {
