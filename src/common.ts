@@ -45,9 +45,17 @@ export class AppState {
     static taskGroupNames = [TaskGroupNames.PREV_DAY, TaskGroupNames.TODAY, TaskGroupNames.TOMORROW, TaskGroupNames.Next_7_DAYS, TaskGroupNames.ANY_DAY];
     tasks: Task[] = [];
     selectedTaskGroup!: TaskGroup;
-    constructor(public tags:Tag[]){
+    public tags:Tag[]=[];
+    constructor(){
 
     }
+}
+
+/**
+ * used to identify whether a record is active or deleted. for ex: each tag,project,task etc
+ */
+export enum RecordStatus{
+    ACTIVE,DELETED
 }
 
 export class Tag {

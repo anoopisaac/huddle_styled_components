@@ -1,18 +1,29 @@
 import { AppState, SortOrder, Tag, Task, TaskGroup, TaskGroupNames } from "./common";
 import { messageService } from "./Message";
 
-let state: AppState;
+let state: AppState = new AppState();
 export const getState = () => state;
 
-export function initState() {
+export async function initState() {
     // const uniqueTagId = generateRandomId();
     const tag1: Tag = new Tag("swhr", (generateRandomId()));
     const tag2: Tag = new Tag("ihcs", (generateRandomId()));
-    state = new AppState([tag1, tag2])
+    state.tags = await fetchTags();
 }
+
 
 export function generateRandomId() {
     return Math.round(Math.random() * 1000000000000000) + "";
+}
+export async function fetchTags() {
+    const tagUrl = "https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo/tag?user=anoop";
+    const tags: Tag[] = await fetchItems(tagUrl);
+    return tags;
+}
+
+export function fetchItems(url: string) {
+    return fetch(url).then(res => res.json()).then((result) => result.Items)
+
 }
 
 export function setGroupedTask(groupName: string) {
@@ -31,10 +42,10 @@ export function setGroupedTask(groupName: string) {
     const group = new TaskGroup("today", "Today", filteredTasks);
     state.selectedTaskGroup = group;
 }
-const url = "https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo?partKey=anoop&project=personal";
 
 export function fetchTasks(groupName: string) {
-    fetch(url)
+    const fetchTasksUrl = "https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo?partKey=anoop&project=personal";
+    fetch(fetchTasksUrl)
         .then(res => res.json())
         .then(
             (result) => {
@@ -43,12 +54,10 @@ export function fetchTasks(groupName: string) {
                     task.userProject = task['partKey'];
                     task.taskId = task['id'];
                 })
+                console.log(state.tasks);
                 setGroupedTask(groupName);
                 messageService.sendMessage("done");
             },
-            // Note: it's important to handle errors here
-            // instead of a catch() block so that we don't swallow
-            // exceptions from actual bugs in components.
             (error) => {
                 // this.tasks = [];
             }

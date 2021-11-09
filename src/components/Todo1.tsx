@@ -303,8 +303,8 @@ const Tags: any = (props: { taskItem: Task, todo: Todo }) => {
                 tag._isSelected = (selectedTags.find(selTag => selTag.name === tag.name) !== undefined ? true : false)
             })}
             <Styler xs={{ gac: "max-content", cg: "5px", mt: "5px" }}>
-                {allTags.map((tag: Tag, index: number) => {
-                    return <Styler xs={{ br: "5px", wd: "40px", bdr: "1px solid #a3a3a3", cr: "pointer", p: "3px", d: "grid", pi: "center", bgc: tag._isSelected === true ? "#bdbcbc" : "#e2e2e2" }} key={index} onClick={() => selectTag(tag)}>
+                {allTags.map((tag: Tag) => {
+                    return <Styler xs={{ br: "5px", wd: "40px", bdr: "1px solid #a3a3a3", cr: "pointer", p: "3px", d: "grid", pi: "center", bgc: tag._isSelected === true ? "#bdbcbc" : "#e2e2e2" }} key={tag.id} onClick={() => selectTag(tag)}>
                         <span className="txt">{tag.name}</span>
                     </Styler>
                     // #8fc6f0
@@ -313,8 +313,8 @@ const Tags: any = (props: { taskItem: Task, todo: Todo }) => {
             </Styler>
 
 
-            {taskItem.tags.map((tag: Tag, index: number) => {
-                <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gac: "20px", cg: "5px", mb: "4px" }} key={index} >
+            {taskItem.tags.map((tag: Tag) => {
+                <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gac: "20px", cg: "5px", mb: "4px" }} key={tag.id} >
                     <Styler xs={{ br: "5px", ht: "20px", wd: "100%", bdr: "1px solid red" }}>{tag.name}</Styler>
                 </Styler>
             })}

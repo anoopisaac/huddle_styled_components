@@ -8,6 +8,7 @@ import { ThemeProvider } from 'styled-components'
 import { Todo } from './components/Todo1'
 import { SideBar } from './components/SideBar'
 import { initState } from './StateService'
+import { useState,useEffect } from 'react'
 const theme = {
   colors: {
     header: '#ebfbff',
@@ -36,7 +37,11 @@ const theme = {
 // }
 
 function App() {
-  initState();
+
+  useEffect(() => {
+    initState();
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <>
