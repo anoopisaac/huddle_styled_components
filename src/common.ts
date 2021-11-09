@@ -41,13 +41,16 @@ export enum TaskGroupNames {
 }
 
 export class AppState {
-    tags: Tag[] = [{ name: 'ihcs' }, { name: 'swhr' }];
+    // tags: Tag[] = [{ name: 'ihcs' }, { name: 'swhr' }];
     static taskGroupNames = [TaskGroupNames.PREV_DAY, TaskGroupNames.TODAY, TaskGroupNames.TOMORROW, TaskGroupNames.Next_7_DAYS, TaskGroupNames.ANY_DAY];
     tasks: Task[] = [];
     selectedTaskGroup!: TaskGroup;
+    constructor(public tags:Tag[]){
+
+    }
 }
 
 export class Tag {
-    name!: string;
-    _isSelected? = false;
+    constructor(public name: string, public id: string, public _isSelected = false) {
+    }
 }

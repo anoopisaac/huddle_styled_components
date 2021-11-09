@@ -1,8 +1,19 @@
-import { AppState, SortOrder, Task, TaskGroup, TaskGroupNames } from "./common";
+import { AppState, SortOrder, Tag, Task, TaskGroup, TaskGroupNames } from "./common";
 import { messageService } from "./Message";
 
-const state: AppState = new AppState();
+let state: AppState;
 export const getState = () => state;
+
+export function initState() {
+    // const uniqueTagId = generateRandomId();
+    const tag1: Tag = new Tag("swhr", (generateRandomId()));
+    const tag2: Tag = new Tag("ihcs", (generateRandomId()));
+    state = new AppState([tag1, tag2])
+}
+
+export function generateRandomId() {
+    return Math.round(Math.random() * 1000000000000000) + "";
+}
 
 export function setGroupedTask(groupName: string) {
     const tasks = state.tasks;
@@ -28,6 +39,10 @@ export function fetchTasks(groupName: string) {
         .then(
             (result) => {
                 state.tasks = result.Items.sort((a: Task, b: Task) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+                state.tasks.forEach((task: any) => {
+                    task.userProject = task['partKey'];
+                    task.taskId = task['id'];
+                })
                 setGroupedTask(groupName);
                 messageService.sendMessage("done");
             },

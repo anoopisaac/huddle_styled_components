@@ -5,7 +5,7 @@ import React from "react";
 import { Subscription } from "rxjs";
 import { AppState, Tag } from "../common";
 import { messageService } from "../Message";
-import { getState } from "../StateService";
+import { generateRandomId, getState } from "../StateService";
 import { Styler } from "./styles/Grid.styled";
 import { Todo } from "./Todo1";
 
@@ -75,7 +75,7 @@ class MasterTags extends React.Component<any> {
                             />
                         </Styler>
                         {this.appState.tags.map((itemTag: Tag) => {
-                            return <Styler xs={{ d: "grid", p: "0px 10px", ht: "30px", wd: "100%", bs: "border-box", bb: "1px solid #eeeeee", ai: "center" }}>
+                            return <Styler key={itemTag.id} xs={{ d: "grid", p: "0px 10px", ht: "30px", wd: "100%", bs: "border-box", bb: "1px solid #eeeeee", ai: "center" }}>
                                 <Styler className="txt" as="span">{itemTag.name}</Styler>
                             </Styler>
                         })}
@@ -85,12 +85,32 @@ class MasterTags extends React.Component<any> {
         );
     }
     private addNewTag(name: string): void {
-        this.appState.tags.push({ name, _isSelected: false });
+        const tag: Tag = new Tag(name, (generateRandomId()));
+        this.appState.tags.push(tag);
         this.setState({})
     }
     private toggleTag(): void {
         this.tagsOpen = this.tagsOpen === true ? false : true;
         this.setState({})
+    }
+}
+class UserProjects extends React.Component<any> {
+    constructor(props: any) {
+        super(props);
+    }
+    componentWillMount() { }
+    componentDidMount() { }
+    render() {
+        return (
+            <Styler type={this.props.text
+            } name={this.props.name
+            } placeholder={this.props.placeholder
+            } value={this.props.value
+            } onChange={this.props.onChange
+            } xs={this.props.xs
+            }>
+            </Styler>
+        );
     }
 }
 

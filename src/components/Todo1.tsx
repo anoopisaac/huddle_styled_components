@@ -6,7 +6,7 @@ import { AppState, SortOrder, SubTask, Tag, Task, TaskGroup, TaskGroupNames, Tas
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp, faTag } from '@fortawesome/free-solid-svg-icons';
 import './styles/common.scss'
-import { fetchTasks, getState, sortTaskFn } from '../StateService';
+import { fetchTasks, generateRandomId, getState, sortTaskFn } from '../StateService';
 import { messageService } from '../Message';
 import { Subscription } from 'rxjs';
 import Editable from './Editable';
@@ -77,8 +77,6 @@ export class Todo extends React.Component {
         this.updateTask(newTask);
     }
 
-    generateRandomId = () => Math.round(Math.random() * 10000000000) + "";
-
     getTask = () => {
         const newTask = new Task();
         const taskDate = new Date();
@@ -88,7 +86,7 @@ export class Todo extends React.Component {
         newTask.subTasks = [];
         // newTask.subTasks = [{ taskText: "", taskStatus: TaskStatus.NOTDONE, subTaskId: this.generateRandomId() }];
         newTask.tags = [];
-        newTask.taskId = this.generateRandomId();
+        newTask.taskId = generateRandomId();
         newTask.userProject = "anoop#personal"
         newTask.isUrgent = false;
         newTask.duration = 10;
@@ -155,11 +153,12 @@ export class Todo extends React.Component {
         this.updateTask(task);
     }
     addTag = (task: Task, name: string) => {
-        task.tags.push({ name });
+        const tag: Tag = new Tag(name, (generateRandomId()));
+        task.tags.push(tag);
         this.setState({})
     }
     addSubTask = (task: Task, taskText: string) => {
-        task.subTasks.push({ subTaskId: this.generateRandomId(), taskText, taskStatus: TaskStatus.NOTDONE });
+        task.subTasks.push({ subTaskId: generateRandomId(), taskText, taskStatus: TaskStatus.NOTDONE });
         this.updateTask(task);
     }
     render() {
@@ -266,7 +265,7 @@ const SubTasks: any = (props: { taskItem: Task, todo: Todo }) => {
                         <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gtc: "20px 1fr", cg: "5px", mb: "4px" }} >
                             <Checkbox checked={subTask.taskStatus === TaskStatus.DONE} onChange={() => todo.toggleTaskStatus(taskItem, subTask)} inputProps={{ 'aria-label': 'controlled' }} size="small" />
                             <Editable text={subTask.taskText} placeholder="Write a task name" type="input" update={() => todo.updateTask(taskItem)} xs={{ als: "center", ht: "20px" }}>
-                                <Styler as="input" type="text" name="task" placeholder="Write a task name" value={subTask.taskText} onChange={(e:any) => { subTask.taskText = e.target.value; todo.setState({}) }} xs={{ wd: "100%", bs: "border-box", fs: "small", ht: "23px", bdr: "1px solid #ced4da", pl: "3px", br: "3px" }} />
+                                <Styler as="input" type="text" name="task" placeholder="Write a task name" value={subTask.taskText} onChange={(e: any) => { subTask.taskText = e.target.value; todo.setState({}) }} xs={{ wd: "100%", bs: "border-box", fs: "small", ht: "23px", bdr: "1px solid #ced4da", pl: "3px", br: "3px" }} />
                             </Editable>
                         </Styler>
                         <Styler as="hr" xs={{ wd: "90%", jus: "end" }}></Styler>
@@ -291,7 +290,8 @@ const Tags: any = (props: { taskItem: Task, todo: Todo }) => {
         if (selTagIndex > -1) {
             taskItem.tags.splice(selTagIndex, 1);
         } else {
-            taskItem.tags.push({ name: tag.name });
+            const newTag = new Tag(tag.name, generateRandomId())
+            taskItem.tags.push(newTag);
         }
         // taskItem.tags = [...taskItem.tags];
         // setSelectdTags(taskItem.tags);

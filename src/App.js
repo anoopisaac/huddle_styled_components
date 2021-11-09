@@ -7,6 +7,7 @@ import { ThemeProvider } from 'styled-components'
 // import content from './content'
 import { Todo } from './components/Todo1'
 import { SideBar } from './components/SideBar'
+import { initState } from './StateService'
 const theme = {
   colors: {
     header: '#ebfbff',
@@ -35,11 +36,12 @@ const theme = {
 // }
 
 function App() {
+  initState();
   return (
     <ThemeProvider theme={theme}>
       <>
         <SideBar></SideBar>
-        <Todo/>
+        <Todo />
       </>
     </ThemeProvider>
   )
