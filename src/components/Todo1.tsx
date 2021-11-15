@@ -2,7 +2,7 @@ import { Styler } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
-import { AppState, SortOrder, SubTask, Tag, Task, TaskGroup, TaskGroupNames, TaskStatus } from '../common';
+import { AppState, SortOrder, SubTask, Tag, Task, TaskGroupNames, TaskStatus } from '../common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp, faTag } from '@fortawesome/free-solid-svg-icons';
 import './styles/common.scss'
@@ -216,7 +216,7 @@ export class Todo extends React.Component {
                                         </Styler>
                                         <hr></hr>
                                         <SubTasks taskItem={taskItem} todo={this}></SubTasks>
-                                        <Tags taskItem={taskItem} todo={this}></Tags>
+                                        <Tags taskItem={taskItem} todo={this} tags={this.appState.tags}></Tags>
                                     </Styler>
                                 )}
                             </Styler>
@@ -280,11 +280,15 @@ const Tags: any = (props: { taskItem: Task, todo: Todo }) => {
     const { taskItem, todo } = props;
     const [selectedTags, setSelectdTags] = useState(taskItem.tags);
     const [allTags, setAllTags] = useState(todo.appState.tags);
+
+    useEffect(() => {
+        console.log("werere");
+        setAllTags(todo.appState.tags)
+    }, [taskItem._isTagOpen])
     // const taskItem;
     if (taskItem._isTagOpen !== true) {
         return (<></>);
     }
-
     const selectTag = (tag: Tag) => {
         const selTagIndex = taskItem.tags.findIndex(item => item.name === tag.name);
         if (selTagIndex > -1) {
@@ -311,14 +315,6 @@ const Tags: any = (props: { taskItem: Task, todo: Todo }) => {
                     // return <Button variant="outlined" size="small" onClick={() => { }} key={index} style={{ width: "100%" }}>{tag}</Button>
                 })}
             </Styler>
-
-
-            {taskItem.tags.map((tag: Tag) => {
-                <Styler xs={{ ht: "30px", als: "center", d: "grid", wd: "90%", jus: "end", gac: "20px", cg: "5px", mb: "4px" }} key={tag.id} >
-                    <Styler xs={{ br: "5px", ht: "20px", wd: "100%", bdr: "1px solid red" }}>{tag.name}</Styler>
-                </Styler>
-            })}
-
         </React.Fragment>
 
     )

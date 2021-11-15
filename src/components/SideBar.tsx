@@ -1,13 +1,12 @@
-import { faAngleDown, faAngleUp, faCalendar } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown, faAngleUp, faCalendar, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { timeStamp } from "console";
 import React from "react";
 import { Subscription } from "rxjs";
-import { AppState, Tag } from "../common";
+import { AppState, RecordStatus, Tag } from "../common";
 import { messageService } from "../Message";
-import { generateRandomId, getState } from "../StateService";
+import { generateRandomId, getState, pushTag } from "../StateService";
 import { Styler } from "./styles/Grid.styled";
-import { Todo } from "./Todo1";
+// import { Todo } from "./Todo1";
 
 export class SideBar extends React.Component {
     constructor(props: any) {
@@ -52,8 +51,23 @@ class MasterTags extends React.Component<any> {
             this.setState({});
         })
     }
+    handleDelete(tag: Tag) {
+        tag.tagStatus = RecordStatus.DELETED;
+        pushTag(tag, false);
+        this.setState({});
+    }
     componentWillUnmount() {
 
+    }
+    private addNewTag(name: string): void {
+        const tag: Tag = new Tag(name, (generateRandomId()));
+        this.appState.tags.push(tag);
+        pushTag(tag, true);
+        this.setState({})
+    }
+    private toggleTag(): void {
+        this.tagsOpen = this.tagsOpen === true ? false : true;
+        this.setState({})
     }
     render() {
         return (
@@ -74,24 +88,19 @@ class MasterTags extends React.Component<any> {
                                 }}
                             />
                         </Styler>
-                        {this.appState.tags.map((itemTag: Tag) => {
-                            return <Styler key={itemTag.id} xs={{ d: "grid", p: "0px 10px", ht: "30px", wd: "100%", bs: "border-box", bb: "1px solid #eeeeee", ai: "center" }}>
-                                <Styler className="txt" as="span">{itemTag.name}</Styler>
+                        {this.appState.tags.filter(itemTag => itemTag.tagStatus !== RecordStatus.DELETED).map((itemTag: Tag) => {
+                            // if (itemTag.tagStatus === RecordStatus.DELETED) {
+                            //     return <></>;
+                            // }
+                            return <Styler key={itemTag.id} xs={{ d: "grid", p: "0px 10px", ht: "30px", wd: "100%", bs: "border-box", bb: "1px solid #eeeeee", ai: "center", gtc: "1fr 1fr" }}>
+                                <Styler className="txt" as="span" xs={{ jus: "start" }}>{itemTag.name}</Styler>
+                                <FontAwesomeIcon icon={faTrash} className="awesome-icon" style={{ justifySelf: "end" }} onClick={() => this.handleDelete(itemTag)} />
                             </Styler>
                         })}
                     </Styler>
                 }
             </Styler>
         );
-    }
-    private addNewTag(name: string): void {
-        const tag: Tag = new Tag(name, (generateRandomId()));
-        this.appState.tags.push(tag);
-        this.setState({})
-    }
-    private toggleTag(): void {
-        this.tagsOpen = this.tagsOpen === true ? false : true;
-        this.setState({})
     }
 }
 class UserProjects extends React.Component<any> {
