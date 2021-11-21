@@ -1,0 +1,133 @@
+const AWS = require('aws-sdk');
+const db = new AWS.DynamoDB.DocumentClient({
+    region: 'us-east-1'
+});
+
+exports.handler = async(event) => {
+
+    try {
+        const tableName = 'task1';
+        const partKeySuffix = "tag"
+        let user;
+        let project;
+        let partKey;
+        const queryParams = event.queryStringParameters;
+        user = queryParams.user;
+        project = queryParams.project;
+        partKey = `${user}#${project}#${partKeySuffix}`;
+
+        const httpMethod = event['httpMethod'];
+        // return generateResponse({method:httpMethod});
+        let response = "method not allowed";
+        if (httpMethod === "PATCH") {
+            response = await genericUpdate(event)
+        }
+        if (httpMethod === "POST") {
+            response = await insertTag(event)
+        }
+        if (httpMethod === "GET") {
+            response = await fetchTags(event)
+        }
+        console.log("hello check", response)
+        return generateResponse(response);
+    }
+    catch (err) {
+        console.log(err, "werewrewrew");
+        return generateResponse(err.message, true)
+    }
+}
+const genericUpdate = async(event,partKey,id) => {
+    let message = "";
+    if (event.body !== null && event.body !== undefined) {
+        const queryParams = event.queryStringParameters;
+        let user = queryParams.user;
+        let body = JSON.parse(event.body) //use in case of JSON body
+        const tagId = body.id;
+        const params = {
+            TableName: tableName,
+            Key: {
+                "partKey": partKey,
+                "id": tagId
+            },
+            UpdateExpression: "set MapAttribute=:body",
+            ExpressionAttributeValues: {
+                ":body": body
+            },
+            // ExpressionAttributeNames: {
+            //     // "#body":"body"
+            // },
+            ReturnValues: "UPDATED_NEW"
+        }
+        await db.update(params).promise();
+        message = "done";
+        //your code
+    }
+    else {
+        message = "no body present";
+    }
+    return message;
+}
+
+
+const insertTag = async(event) => {
+    let message = "";
+    if (event.body !== null && event.body !== undefined) {
+        let body = JSON.parse(event.body) //use in case of JSON body
+        const params = {
+            TableName: tableName,
+            Item: {
+                partKey: partKey,
+                id: body.id,
+                // name: body.name,
+                // createdDate: body.createdDate,
+                // tagStatus: body.tagStatus,
+                // body:body
+                MapAttribute: body,
+            }
+        }
+        await db.put(params).promise();
+        message = "done";
+        //your code
+    }
+    else {
+        message = "no body present";
+    }
+    return message;
+}
+
+
+const fetchTags = async(event,partKey) => {
+    const params = {
+        ExpressionAttributeValues: {
+            ":v1": partKey,
+            // ":how": "how"
+        },
+        KeyConditionExpression: "partKey = :v1",
+        // FilterExpression: '#hello = :how',
+        // FilterExpression: 'contains(#hello, :how)',
+        // ExpressionAttributeNames: { 
+        // "#check": "check",
+        // "#hello": "hello" 
+
+        // },
+        TableName: tableName
+    }
+    const response = await db.query(params).promise();
+
+    return response;
+}
+
+const generateResponse = (message, err) => {
+    const response = {
+        statusCode: err === true ? 500 : 200,
+        body: JSON.stringify(message),
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        },
+    };
+    return response;
+}
+
+const class HandleCrud{
+    
+}

@@ -46,7 +46,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <>
         <SideBar></SideBar>
-        <Todo />
+        <Todo/>
       </>
     </ThemeProvider>
   )

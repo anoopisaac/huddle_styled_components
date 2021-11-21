@@ -2,11 +2,11 @@ import { Styler } from './styles/Grid.styled'
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import TodoForm from './TodoForm';
-import { AppState, SortOrder, SubTask, Tag, Task, TaskGroupNames, TaskStatus } from '../common';
+import { AppState, SortOrder, SubTask, Tag, Task, TaskDateRange, TaskStatus, User, UserProject } from '../common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp, faTag } from '@fortawesome/free-solid-svg-icons';
 import './styles/common.scss'
-import { fetchTasks, generateRandomId, getState, sortTaskFn } from '../StateService';
+import { fetchTasks, generateRandomId, getFilteredTask, getState, insertUpdateRemoteTask, sortTaskFn } from '../StateService';
 import { messageService } from '../Message';
 import { Subscription } from 'rxjs';
 import Editable from './Editable';
@@ -14,14 +14,15 @@ import { Button, Checkbox } from '@mui/material';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { HighlightSpanKind } from 'typescript';
+import { toUSVString } from 'util';
 
 
 declare var window: any;
 
 export class Todo extends React.Component {
-    url = "https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo?partKey=anoop&project=personal";
     appState!: AppState;
     editTask: Task | undefined = undefined;
+    filteredTasks: Task[] = [];
     constructor(props: any) {
         super(props);
         this.state = {
@@ -35,30 +36,35 @@ export class Todo extends React.Component {
 
     componentDidMount() {
         this.appState = getState();
-        this.subscription = messageService.getMessage().subscribe(data => {
-            console.log(this.appState?.selectedTaskGroup.tasks, "eeeee");
+        this.subscription = messageService.getMessage().subscribe(async data => {
+            // console.log(this.appState?.selectedTaskGroup.tasks, "eeeee");
+            this.filteredTasks = await getFilteredTask();
             this.setState({});
         })
         window['ee'] = this;
-        fetchTasks(TaskGroupNames.ANY_DAY);
+    }
+    async componentDidUpdate() {
+        // this.filteredTasks = await getFilteredTask();
     }
     componentWillUnmount() {
         this.subscription?.unsubscribe();
     }
     updateTask = (task: Task) => {
         console.log(task);
-        const existTask = this.appState.tasks.find(item => item.taskId === task.taskId)
-        const selectedTaskGroup = this.appState.selectedTaskGroup;
+        const currProject = this.appState.currProject;
+        const existTask = this.filteredTasks.find(item => item.taskId === task.taskId)
+        // const selectedTaskGroup = this.appState.selectedTaskGroup;
         if (existTask === undefined) {
-            this.insertUpdateRemoteTask(true, task);
-            this.appState?.selectedTaskGroup?.tasks.unshift(task);
+            insertUpdateRemoteTask(true, task, this.appState.user, currProject);
+            this.appState.tasks[currProject.id].unshift(task);
+            this.filteredTasks.unshift(task);
         } else {
             // setCurrTask(data);
             // todos.find(todo=>todo.task_id===data.task_id)
-            selectedTaskGroup.tasks = selectedTaskGroup.tasks.map((item) => {
+            this.filteredTasks = this.filteredTasks.map((item) => {
                 return item.taskId === task.taskId ? task : item
             });
-            this.insertUpdateRemoteTask(false, task);
+            insertUpdateRemoteTask(false, task, this.appState.user, currProject);
         }
         this.setState({})
         // settodos(newTodos);
@@ -94,19 +100,7 @@ export class Todo extends React.Component {
         return newTask;
     }
 
-    insertUpdateRemoteTask = async (isInsert: boolean, task: Task) => {
-        // const taskId = Math.round(Math.random() * 10000000000);
-        const response = await fetch('https://jukk3718ad.execute-api.us-east-1.amazonaws.com/beta/todo', {
-            method: isInsert ? 'POST' : 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(task)
-        })
-        const data = await response.text();
-        // enter you logic when the fetch is successful
-        console.log(data);
-    }
+
     onChange(event: any, task: Task) {
         console.log(event.target.name, event.target.value);
         const ee: string = event.target.name;
@@ -144,9 +138,9 @@ export class Todo extends React.Component {
     }
     currentSortOrder = SortOrder.DESC;
     sortTask = () => {
-        const selectedTaskGroup = this.appState?.selectedTaskGroup
+        // const selectedTaskGroup = this.appState?.selectedTaskGroup
         this.currentSortOrder = this.currentSortOrder === SortOrder.DESC ? SortOrder.ASC : SortOrder.DESC;
-        selectedTaskGroup.tasks = sortTaskFn(this.currentSortOrder, selectedTaskGroup.tasks);
+        this.filteredTasks = sortTaskFn(this.currentSortOrder, this.filteredTasks);
         this.setState({});
     }
     onDurationBlur = (task: Task) => {
@@ -162,17 +156,17 @@ export class Todo extends React.Component {
         this.updateTask(task);
     }
     render() {
-        const selectedTaskGroup = this.appState?.selectedTaskGroup;
+        const filteredTasks = this.filteredTasks;
         return (
             <Styler className="task-group-container" xs={{ gtc: "700px 1fr" }}>
                 <Modal trigger={this.editTask} close={() => this.closeModal()} width="600px" height="300px">
                     <TodoForm updateTask={this.updateTask} task={this.editTask} />
                 </Modal>
                 {
-                    (selectedTaskGroup &&
-                        <Styler xs={{ gar: "30px 40px 1fr", br: "5px", p: "10px" }} key={selectedTaskGroup.groupId} className="task-group">
+                    (filteredTasks &&
+                        <Styler xs={{ gar: "30px 40px 1fr", br: "5px", p: "10px" }} className="task-group">
                             <Styler xs={{ gtc: "max-content 1fr max-content" }}>
-                                <Styler as="span" als="center" className="txt title">{selectedTaskGroup.groupTitle}</Styler>
+                                <Styler as="span" als="center" className="txt title">{'today'}</Styler>
                                 <div></div>
                                 <Button variant="outlined" size="small" onClick={() => this.sortTask()}>Sort</Button>
                             </Styler>
@@ -187,7 +181,7 @@ export class Todo extends React.Component {
                                 />
                             </Styler>
                             <Styler xs={{ gar: "max-content" }} >
-                                {selectedTaskGroup.tasks.map(taskItem =>
+                                {filteredTasks.map(taskItem =>
                                     <Styler key={taskItem.taskId} xs={{ gar: "max-content" }}>
                                         <Styler xs={{ gtc: "10px 20px 1fr 40px 75px 10px 10px", gta: "'down-arrow check task duration date priority tag'", cg: "5px", mb: "4px", d: "grid", ai: "center", ht: "30px" }} className="task">
                                             {< FontAwesomeIcon icon={taskItem._isSubTaskOpen === true ? faAngleUp : faAngleDown} className="awesome-icon" style={{ gridArea: "down-arrow", cursor: "pointer" }} onClick={() => this.toggleSubTask(taskItem)} />}
@@ -279,11 +273,11 @@ const Tags: any = (props: { taskItem: Task, todo: Todo }) => {
 
     const { taskItem, todo } = props;
     const [selectedTags, setSelectdTags] = useState(taskItem.tags);
-    const [allTags, setAllTags] = useState(todo.appState.tags);
+    const [allTags, setAllTags] = useState(todo.appState.getCurrentTags());
 
     useEffect(() => {
         console.log("werere");
-        setAllTags(todo.appState.tags)
+        setAllTags(todo.appState.getCurrentTags())
     }, [taskItem._isTagOpen])
     // const taskItem;
     if (taskItem._isTagOpen !== true) {
