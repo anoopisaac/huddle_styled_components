@@ -1,0 +1,38 @@
+
+// import {DynamoDbHandler} from './lamdba-common'
+
+exports.handler = async (event) => {
+    try {
+        const { App } = await import('./lambda-common.js');
+        const tableName = 'task1';
+        const partKeySuffix = "tag"
+
+        const queryParams = event.queryStringParameters;
+        const user = queryParams.user;
+        const project = queryParams.project;
+
+        let body = JSON.parse(event.body) //use in case of JSON body
+        const tagId = body.id;
+        const httpMethod = event['httpMethod'];
+        const item = body;
+
+        const partKey = `${user}#${project}#${partKeySuffix}`;
+        const dynamoDbHandler = new DynamoDbHandler(tableName, partKey, tagId, item);
+        return dynamoDbHandler.handleRequest(httpMethod);
+    }
+    catch (err) {
+        console.log(err, "werewrewrew");
+        return generateResponse(err.message, true)
+    }
+}
+
+const generateResponse = (message, err) => {
+    const response = {
+        statusCode: err === true ? 500 : 200,
+        body: JSON.stringify(message),
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        },
+    };
+    return response;
+}
